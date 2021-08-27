@@ -9,6 +9,8 @@
     <string name="permission_package">package</string>
 
     <string name="album_view">Select album</string>
+    <string name="single_image_view">Select up to %s photo</string>
+    <string name="single_video_view">Select up to %s video</string>
     <string name="image_view">Select up to %s photos</string>
     <string name="video_view">Select up to %s videos</string>
     <string name="media_view">Select up to %s photos and videos</string>

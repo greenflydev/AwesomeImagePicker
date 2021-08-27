@@ -1,5 +1,8 @@
 package in.myinnos.awesomeimagepicker.activities;
 
+import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
+import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
+
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -33,9 +36,6 @@ import in.myinnos.awesomeimagepicker.models.Image;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 import in.myinnos.awesomeimagepicker.models.Video;
-
-import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
-import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -95,10 +95,18 @@ public class MediaSelectActivity extends HelperActivity {
         int profile = R.string.media_view;
         switch (ConstantsCustomGallery.mediaStoreType) {
             case VIDEOS:
-                profile = R.string.video_view;
+                if (ConstantsCustomGallery.limit == 1) {
+                    profile = R.string.single_video_view;
+                } else {
+                    profile = R.string.video_view;
+                }
                 break;
             case IMAGES:
-                profile = R.string.image_view;
+                if (ConstantsCustomGallery.limit == 1) {
+                    profile = R.string.single_image_view;
+                } else {
+                    profile = R.string.image_view;
+                }
                 break;
         }
         tvProfile.setText(String.format(Locale.ENGLISH, getString(profile), ConstantsCustomGallery.limit));
