@@ -34,6 +34,10 @@ public abstract class CustomGenericAdapter<T> extends BaseAdapter {
         return arrayList.get(position);
     }
 
+    public void clear() {
+        arrayList.clear();
+    }
+
     @Override
     public long getItemId(int position) {
         return position;

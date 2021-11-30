@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,6 +54,11 @@ public class MediaSelectActivity extends HelperActivity {
     private GridView gridView;
     private CustomMediaSelectAdapter adapter;
 
+    private LinearLayout mediaType;
+    private TextView mediaTypeAll;
+    private TextView mediaTypePhotos;
+    private TextView mediaTypeVideos;
+
     private int countSelected;
 
     private ContentObserver observer;
@@ -84,6 +90,11 @@ public class MediaSelectActivity extends HelperActivity {
         tvAdd = findViewById(R.id.tvAdd);
         tvSelectCount = findViewById(R.id.tvSelectCount);
         liFinish = findViewById(R.id.liFinish);
+
+        mediaType = findViewById(R.id.mediaType);
+        mediaTypeAll = findViewById(R.id.mediaTypeAll);
+        mediaTypePhotos = findViewById(R.id.mediaTypePhotos);
+        mediaTypeVideos = findViewById(R.id.mediaTypeVideos);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -154,6 +165,44 @@ public class MediaSelectActivity extends HelperActivity {
                 sendIntent();
             }
         });
+
+        if (ConstantsCustomGallery.mediaStoreType == MediaStoreType.MIXED) {
+            mediaType.setVisibility(View.VISIBLE);
+            mediaTypeAll.setOnClickListener(view -> mediaTypeClicked(MediaStoreType.MIXED));
+            mediaTypePhotos.setOnClickListener(view -> mediaTypeClicked(MediaStoreType.IMAGES));
+            mediaTypeVideos.setOnClickListener(view -> mediaTypeClicked(MediaStoreType.VIDEOS));
+        }
+    }
+
+    private void mediaTypeClicked(MediaStoreType mediaStoreType) {
+
+        ConstantsCustomGallery.mediaStoreType = mediaStoreType;
+
+        mediaTypeAll.setTypeface(null, Typeface.NORMAL);
+        mediaTypePhotos.setTypeface(null, Typeface.NORMAL);
+        mediaTypeVideos.setTypeface(null, Typeface.NORMAL);
+
+        switch (ConstantsCustomGallery.mediaStoreType) {
+            case MIXED:
+                mediaTypeAll.setTypeface(null, Typeface.BOLD);
+                break;
+            case IMAGES:
+                mediaTypePhotos.setTypeface(null, Typeface.BOLD);
+                break;
+            case VIDEOS:
+                mediaTypeVideos.setTypeface(null, Typeface.BOLD);
+                break;
+        }
+
+        if (adapter != null) {
+            adapter.clear();
+        }
+
+        if (media != null) {
+            media.clear();
+        }
+
+        loadMedia();
     }
 
     @Override

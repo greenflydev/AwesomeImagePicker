@@ -1,5 +1,7 @@
 package in.myinnos.awesomeimagepicker.adapter;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -20,8 +22,6 @@ import java.util.concurrent.TimeUnit;
 import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.Video;
-
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -112,5 +112,4 @@ public class CustomMediaSelectAdapter extends CustomGenericAdapter<Media> {
         public TextView videoDuration;
         public View view;
     }
-
 }
