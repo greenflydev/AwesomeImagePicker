@@ -1,12 +1,14 @@
 <resources>
     <!--Request Permission-->
     <string name="permission_info">La aplicación requiere el permiso del almacenamiento para ver los archivos.</string>
-    <string name="permission_force">La aplicación requiere permiso del almacenamiento para ver los archivos. Toca en Ajustes y ve a Permisos para activarlo.</string>
+    <string name="permission_force">La aplicación requiere permiso del almacenamiento para ver los archivos. Toca en Ajustes y ve a Permisos para activarlo</string>
     <string name="permission_ok">Aceptar</string>
     <string name="permission_settings">Ajustes</string>
     <string name="permission_package">paquete</string>
 
     <string name="album_view">Selecciona un álbum</string>
+    <string name="single_image_view">Selecciona hasta %s foto</string>
+    <string name="single_video_view">Selecciona hasta %s video</string>
     <string name="image_view">Selecciona hasta %s fotos</string>
     <string name="video_view">Selecciona hasta %s videos</string>
     <string name="media_view">Selecciona hasta %s fotos y videos</string>
@@ -15,7 +17,11 @@
     <string name="image_limit_exceeded">Puedes seleccionar un máximo de %d fotos</string>
     <string name="video_limit_exceeded">Puedes seleccionar un máximo de %d videos</string>
     <string name="media_limit_exceeded">Puedes seleccionar un máximo de %d fotos y videos</string>
-    <string name="error_null_cursor">¡Ups! Algo salió mal.</string>
-    <string name="add">AGREGAR</string>
-    <string name="capture_photo">Capturar foto</string>
+    <string name="error_null_cursor">Vaya... algo salió mal.</string>
+    <string name="add">HECHO</string>
+    <string name="capture_photo">Tomar foto</string>
+    <string name="activity_media_empty">No hay %1$s en tu dispositivo para cargar.</string>
+    <string name="album_select_videos">videos</string>
+    <string name="album_select_photos">fotos</string>
+    <string name="album_select_media">archivos</string>
 </resources>

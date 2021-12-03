@@ -1,21 +1,27 @@
 <resources>
     <!--Request Permission-->
-    <string name="permission_info">O aplicativo requer a permissão do Armazenamento para visualizar a mídia.</string>
-    <string name="permission_force">O aplicativo requer a permissão do Armazenamento para visualizar a mídia. Clique em Configurações e vá para Permissões para conceder a permissão.</string>
+    <string name="permission_info">O aplicativo exige a permissão de armazenamento para visualizar a mídia.</string>
+    <string name="permission_force">O aplicativo exige a permissão de armazenamento para visualizar a mídia. Toque em \"Configurações\" e acesse \"Permissões\" para conceder a permissão.</string>
     <string name="permission_ok">OK</string>
     <string name="permission_settings">Configurações</string>
     <string name="permission_package">pacote</string>
 
     <string name="album_view">Selecionar álbum</string>
+    <string name="single_image_view">Selecione até %s foto</string>
+    <string name="single_video_view">Selecione até %s vídeo</string>
     <string name="image_view">Selecione até %s fotos</string>
     <string name="video_view">Selecione até %s vídeos</string>
     <string name="media_view">Selecione até %s fotos e vídeos</string>
 
-    <string name="selected">selecionados</string>
+    <string name="selected">selecionado(s)</string>
     <string name="image_limit_exceeded">É possível selecionar no máximo %d fotos</string>
     <string name="video_limit_exceeded">É possível selecionar no máximo %d vídeos</string>
     <string name="media_limit_exceeded">É possível selecionar no máximo %d fotos e vídeos</string>
-    <string name="error_null_cursor">Opa, algo deu errado!</string>
-    <string name="add">ADICIONAR</string>
+    <string name="error_null_cursor">Ops, algo deu errado!</string>
+    <string name="add">CONCLUÍDO</string>
     <string name="capture_photo">Tirar foto</string>
+    <string name="activity_media_empty">Você não tem %1$s no seu dispositivo para carregar.</string>
+    <string name="album_select_videos">vídeos</string>
+    <string name="album_select_photos">fotos</string>
+    <string name="album_select_media">mídias</string>
 </resources>
