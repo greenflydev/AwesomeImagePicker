@@ -1,9 +1,10 @@
 package in.myinnos.awesomeimagepicker.activities;
 
+import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
+import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
+
 import android.content.ContentUris;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,29 +13,24 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 import android.provider.MediaStore;
-import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import in.myinnos.awesomeimagepicker.R;
-import in.myinnos.awesomeimagepicker.adapter.CustomAlbumSelectAdapter;
+import in.myinnos.awesomeimagepicker.adapter.AlbumSelectAdapter;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Album;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
-
-import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
-import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -46,10 +42,8 @@ public class AlbumSelectActivity extends HelperActivity {
     private LinearLayout liFinish;
 
     private ProgressBar loader;
-    private GridView gridView;
-    private CustomAlbumSelectAdapter adapter;
-
-    private ActionBar actionBar;
+    private RecyclerView recyclerView;
+    private AlbumSelectAdapter adapter;
 
     private ContentObserver observer;
     private Handler handler;
@@ -92,16 +86,12 @@ public class AlbumSelectActivity extends HelperActivity {
         liFinish = findViewById(R.id.liFinish);
 
         loader = findViewById(R.id.loader);
-        gridView = findViewById(R.id.grid_view_album_select);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(), MediaSelectActivity.class);
-                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM, albums.get(position).getName());
-                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, albums.get(position).getId());
-                startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
-            }
-        });
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(false);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(RecyclerView.VERTICAL);
+        recyclerView.setLayoutManager(llm);
 
         liFinish.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,19 +117,28 @@ public class AlbumSelectActivity extends HelperActivity {
 
                     case ConstantsCustomGallery.FETCH_STARTED: {
                         loader.setVisibility(View.VISIBLE);
-                        gridView.setVisibility(View.INVISIBLE);
+                        recyclerView.setVisibility(View.INVISIBLE);
                         break;
                     }
 
                     case ConstantsCustomGallery.FETCH_UPDATED: {
                         if (adapter == null) {
-                            adapter = new CustomAlbumSelectAdapter(AlbumSelectActivity.this, getApplicationContext(),
-                                    albums, ConstantsCustomGallery.mediaStoreType);
-                            gridView.setAdapter(adapter);
+
+                            adapter = new AlbumSelectAdapter(AlbumSelectActivity.this, albums, ConstantsCustomGallery.mediaStoreType) {
+                                @Override
+                                public void clicked(int position, Album album) {
+
+                                    Intent intent = new Intent(getApplicationContext(), MediaSelectActivity.class);
+                                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM, album.getName());
+                                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
+                                    startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
+                                }
+                            };
+
+                            recyclerView.setAdapter(adapter);
 
                             loader.setVisibility(View.GONE);
-                            gridView.setVisibility(View.VISIBLE);
-                            orientationBasedUI(getResources().getConfiguration().orientation);
+                            recyclerView.setVisibility(View.VISIBLE);
 
                         } else {
                             adapter.notifyDataSetChanged();
@@ -192,32 +191,10 @@ public class AlbumSelectActivity extends HelperActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(null);
-        }
         albums = null;
-        if (adapter != null) {
-            adapter.releaseResources();
-        }
-        gridView.setOnItemClickListener(null);
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-        orientationBasedUI(newConfig.orientation);
-    }
-
-    private void orientationBasedUI(int orientation) {
-        final WindowManager windowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        final DisplayMetrics metrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-
 //        if (adapter != null) {
-//            int size = orientation == Configuration.ORIENTATION_PORTRAIT ? metrics.widthPixels / 2 : metrics.widthPixels / 4;
-//            adapter.setLayoutParams(size);
+//            adapter.releaseResources();
 //        }
-        gridView.setNumColumns(orientation == Configuration.ORIENTATION_PORTRAIT ? 2 : 4);
     }
 
     @Override
@@ -287,19 +264,29 @@ public class AlbumSelectActivity extends HelperActivity {
                 sendMessage(ConstantsCustomGallery.FETCH_STARTED);
             }
 
-            Uri externalContentUri = ConstantsCustomGallery.getQueryUri();
+            String selection = "";
+            List<String> selectionArgs = new ArrayList<>();
 
-            String selection = null;
-            if (ConstantsCustomGallery.mediaStoreType == MediaStoreType.MIXED) {
-                selection = (MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                        + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
-                        + " OR "
-                        + MediaStore.Files.FileColumns.MEDIA_TYPE + "="
-                        + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+            switch (ConstantsCustomGallery.mediaStoreType) {
+                case MIXED:
+                    selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
+                            + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
+
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+                    break;
+                case IMAGES:
+                    selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+                    break;
+                case VIDEOS:
+                    selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+                    break;
             }
 
-            Cursor cursor = getApplicationContext().getContentResolver().query(externalContentUri, albumProjection,
-                            selection, null, MediaStore.Video.Media.DATE_MODIFIED);
+            Cursor cursor = getApplicationContext().getContentResolver().query(ConstantsCustomGallery.getQueryUri(), albumProjection,
+                            selection, selectionArgs.toArray(new String[0]), MediaStore.Video.Media.DATE_MODIFIED);
 
             if (cursor == null) {
                 sendMessage(ConstantsCustomGallery.ERROR);
@@ -314,6 +301,26 @@ public class AlbumSelectActivity extends HelperActivity {
             }
             albums.clear();
 
+            Album allPhotosAlbum = new Album(ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID, "All Photos", null);
+            Album allVideosAlbum = new Album(ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID, "All Videos", null);
+
+            switch (ConstantsCustomGallery.mediaStoreType) {
+                case MIXED:
+                    getThumbnailAndCount(allPhotosAlbum);
+                    getThumbnailAndCount(allVideosAlbum);
+                    albums.add(allPhotosAlbum);
+                    albums.add(allVideosAlbum);
+                    break;
+                case IMAGES:
+                    getThumbnailAndCount(allPhotosAlbum);
+                    albums.add(allPhotosAlbum);
+                    break;
+                case VIDEOS:
+                    getThumbnailAndCount(allVideosAlbum);
+                    albums.add(allVideosAlbum);
+                    break;
+            }
+
             HashSet<Long> albumSet = new HashSet<>();
             if (cursor.moveToLast()) {
                 do {
@@ -326,9 +333,13 @@ public class AlbumSelectActivity extends HelperActivity {
 
                     if (!albumSet.contains(id)) {
 
-                        Uri uri = getThumbnail(externalContentUri, id);
+                        Album album = new Album();
+                        album.setId(id);
+                        album.setName(name);
 
-                        albums.add(new Album(id, name, uri));
+                        getThumbnailAndCount(album);
+
+                        albums.add(album);
 
                         /*if (!album.equals("Hiding particular folder")) {
                             temp.add(new Album(album, image));
@@ -362,27 +373,57 @@ public class AlbumSelectActivity extends HelperActivity {
         }
     }
 
-    private Uri getThumbnail(Uri externalContentUri, long albumId) {
+    private void getThumbnailAndCount(Album album) {
 
-        Uri uri = null;
+        long albumId = album.getId();
 
-        Cursor cursor = getContentResolver().query(externalContentUri, mediaProjection,
-                MediaStore.MediaColumns.BUCKET_ID + " =?", new String[]{""+albumId}, MediaStore.MediaColumns.DATE_ADDED);
+        String selection = "";
+        List<String> selectionArgs = new ArrayList<>();
+
+        if (albumId != ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID &&
+                albumId != ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
+            selection = MediaStore.MediaColumns.BUCKET_ID + " = ? AND ";
+            selectionArgs.add(String.valueOf(albumId));
+        }
+
+        if (albumId == ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID ||
+                ConstantsCustomGallery.mediaStoreType == MediaStoreType.IMAGES) {
+            selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+            selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+        }
+        else if (albumId == ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID ||
+                ConstantsCustomGallery.mediaStoreType == MediaStoreType.VIDEOS) {
+            selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+            selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+        }
+        else {
+            selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
+
+            selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+            selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+        }
+
+        Cursor cursor = getContentResolver().query(ConstantsCustomGallery.getQueryUri(), mediaProjection,
+                selection, selectionArgs.toArray(new String[0]), MediaStore.MediaColumns.DATE_ADDED);
 
         if (cursor == null) {
             sendMessage(ConstantsCustomGallery.ERROR);
-            return null;
+            return;
         }
 
         if (cursor.moveToLast()) {
             do {
                 if (Thread.interrupted()) {
-                    return null;
+                    return;
                 }
 
                 long id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
 
-                uri = ContentUris.withAppendedId(externalContentUri, id);
+                Uri uri = ContentUris.withAppendedId(ConstantsCustomGallery.getQueryUri(), id);
+
+                album.setUri(uri);
+                album.setCount(cursor.getCount());
 
                 try {
                     getContentResolver().openFileDescriptor(uri, "r");
@@ -391,14 +432,12 @@ public class AlbumSelectActivity extends HelperActivity {
                     continue;
                 }
 
-                // We only need one thumbnail
+                // We only need one thumbnail and the count
                 break;
 
             } while (cursor.moveToPrevious());
         }
         cursor.close();
-
-        return uri;
     }
 
     private void startThread(Runnable runnable) {
@@ -440,6 +479,6 @@ public class AlbumSelectActivity extends HelperActivity {
     @Override
     protected void hideViews() {
         loader.setVisibility(View.GONE);
-        gridView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
     }
 }

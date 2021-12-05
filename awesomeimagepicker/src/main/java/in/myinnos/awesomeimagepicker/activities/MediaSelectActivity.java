@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 
 import in.myinnos.awesomeimagepicker.R;
@@ -45,6 +46,7 @@ public class MediaSelectActivity extends HelperActivity {
     private ArrayList<Media> media;
     private String album;
     private long albumId;
+    private MediaStoreType mediaStoreType;
 
     private TextView errorDisplay, tvProfile, tvAdd, tvSelectCount;
     private LinearLayout liFinish;
@@ -92,8 +94,24 @@ public class MediaSelectActivity extends HelperActivity {
         album = intent.getStringExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM);
         albumId = intent.getLongExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, 0);
 
+        /*
+         * This is the media type that comes from GF. Can be mixed, photos, or videos.
+         */
+        mediaStoreType = ConstantsCustomGallery.mediaStoreType;
+
+        /*
+         * This happens if the user picks to see All Photos or All Videos.
+         * We will switch the mediaStore type to just photos or videos.
+         */
+        if (albumId == ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID) {
+            mediaStoreType = MediaStoreType.IMAGES;
+        }
+        else if (albumId == ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
+            mediaStoreType = MediaStoreType.VIDEOS;
+        }
+
         int profile = R.string.media_view;
-        switch (ConstantsCustomGallery.mediaStoreType) {
+        switch (mediaStoreType) {
             case VIDEOS:
                 if (ConstantsCustomGallery.limit == 1) {
                     profile = R.string.single_video_view;
@@ -289,7 +307,7 @@ public class MediaSelectActivity extends HelperActivity {
         if (!media.get(position).isSelected() && countSelected >= ConstantsCustomGallery.limit) {
 
             int message = R.string.media_limit_exceeded;
-            switch (ConstantsCustomGallery.mediaStoreType) {
+            switch (mediaStoreType) {
                 case VIDEOS:
                     message = R.string.video_limit_exceeded;
                     break;
@@ -371,26 +389,40 @@ public class MediaSelectActivity extends HelperActivity {
                 }
             }
 
-            String selection = MediaStore.MediaColumns.BUCKET_ID + " = ?";
-            String[] selectionArgs = new String[] {"" + albumId};
+            String selection = "";
+            List<String> selectionArgs = new ArrayList<>();
 
             String[] projection = projectionVideos;
-            if (ConstantsCustomGallery.mediaStoreType == MediaStoreType.IMAGES) {
+            if (mediaStoreType == MediaStoreType.IMAGES) {
                 projection = projectionImages;
             }
 
-            if (ConstantsCustomGallery.mediaStoreType == MediaStoreType.MIXED) {
-                selection += " AND (" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
-                        + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
+            if (albumId != ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID &&
+                    albumId != ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
+                selection = MediaStore.MediaColumns.BUCKET_ID + " = ? AND ";
+                selectionArgs.add(String.valueOf(albumId));
+            }
 
-                selectionArgs = new String[] {
-                        "" + albumId,
-                        "" + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO,
-                        "" + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE};
+            switch (mediaStoreType) {
+                case MIXED:
+                    selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
+                            + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
+
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+                    break;
+                case IMAGES:
+                    selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+                    break;
+                case VIDEOS:
+                    selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+                    break;
             }
 
             Cursor cursor = getContentResolver().query(ConstantsCustomGallery.getQueryUri(),
-                    projection, selection, selectionArgs, MediaStore.MediaColumns.DATE_ADDED);
+                    projection, selection, selectionArgs.toArray(new String[0]), MediaStore.MediaColumns.DATE_ADDED);
             if (cursor == null) {
                 sendMessage(ConstantsCustomGallery.ERROR);
                 return;
@@ -413,7 +445,7 @@ public class MediaSelectActivity extends HelperActivity {
                     long id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
                     String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
                     long duration = 0;
-                    if (ConstantsCustomGallery.mediaStoreType != MediaStoreType.IMAGES) {
+                    if (mediaStoreType != MediaStoreType.IMAGES) {
                         duration = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DURATION));
                     }
                     long size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE));

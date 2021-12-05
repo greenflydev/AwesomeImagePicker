@@ -9,6 +9,9 @@ public class Album {
     private long id;
     private String name;
     private Uri uri;
+    private int count;
+
+    public Album() { }
 
     public Album(long id, String name, Uri uri) {
         this.id = id;
@@ -38,5 +41,13 @@ public class Album {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 }

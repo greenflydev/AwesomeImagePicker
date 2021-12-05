@@ -21,6 +21,9 @@ public class ConstantsCustomGallery {
     public static final int ERROR = 2005;
     public static final int EMPTY_LIST = 2006;
 
+    public static final long ALL_PHOTOS_ALBUM_ID = -1001;
+    public static final long ALL_VIDEOS_ALBUM_ID = -1002;
+
     /**
      * Request code for permission has to be < (1 << 8)
      * Otherwise throws java.lang.IllegalArgumentException: Can only use lower 8 bits for requestCode
@@ -43,19 +46,6 @@ public class ConstantsCustomGallery {
     public static MediaStoreType mediaStoreType;
 
     public static Uri getQueryUri() {
-
-        Uri queryUri;
-        switch (mediaStoreType) {
-            case MIXED:
-                queryUri = MediaStore.Files.getContentUri("external");
-                break;
-            case VIDEOS:
-                queryUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-                break;
-            default:
-                queryUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                break;
-        }
-        return queryUri;
+        return MediaStore.Files.getContentUri("external"); // API 29 : MediaStore.VOLUME_EXTERNAL
     }
 }
