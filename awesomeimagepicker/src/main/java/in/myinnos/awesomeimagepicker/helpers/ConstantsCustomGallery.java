@@ -21,8 +21,17 @@ public class ConstantsCustomGallery {
     public static final int ERROR = 2005;
     public static final int EMPTY_LIST = 2006;
 
+    /*
+     * Fake albums for showing all photos or all videos.
+     */
     public static final long ALL_PHOTOS_ALBUM_ID = -1001;
     public static final long ALL_VIDEOS_ALBUM_ID = -1002;
+
+    /*
+     * When the user picks an album there will be a local broadcast with the album id.
+     * This will be used by the calling application to track mixpanel events.
+     */
+    public static final String BROADCAST_MIXPANEL_EVENT = "BROADCAST_MIXPANEL_EVENT";
 
     /**
      * Request code for permission has to be < (1 << 8)

@@ -25,6 +25,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +98,14 @@ public class MediaSelectActivity extends HelperActivity {
 
         /*
          * This is the media type that comes from GF. Can be mixed, photos, or videos.
+         *
+         * We are storing it locally here because the user might have pickd all photos or all videos.
+         * We don't want to overwrite the global type of media, such as mixed.
+         *
+         * Example:
+         * Globally: The user can pick mixed
+         * In the album list the user picked : All Photos
+         * In this media list we only need to show mediaStoreType = MediaStoreType.IMAGES
          */
         mediaStoreType = ConstantsCustomGallery.mediaStoreType;
 
@@ -356,6 +366,7 @@ public class MediaSelectActivity extends HelperActivity {
     }
 
     private void sendIntent() {
+
         Intent intent = new Intent();
         intent.putParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA, getSelected());
         setResult(RESULT_OK, intent);
@@ -397,12 +408,18 @@ public class MediaSelectActivity extends HelperActivity {
                 projection = projectionImages;
             }
 
+            /*
+             * Only real albums need to query by bucket id (album id)
+             */
             if (albumId != ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID &&
                     albumId != ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
                 selection = MediaStore.MediaColumns.BUCKET_ID + " = ? AND ";
                 selectionArgs.add(String.valueOf(albumId));
             }
 
+            /*
+             * Query the right kind of media, depending on mixed/photos/videos
+             */
             switch (mediaStoreType) {
                 case MIXED:
                     selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "

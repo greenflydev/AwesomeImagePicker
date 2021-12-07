@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -127,6 +128,13 @@ public class AlbumSelectActivity extends HelperActivity {
                             adapter = new AlbumSelectAdapter(AlbumSelectActivity.this, albums, ConstantsCustomGallery.mediaStoreType) {
                                 @Override
                                 public void clicked(int position, Album album) {
+
+                                    /*
+                                     * This will broadcast out that the user selected an album. Used for mixpanel tracking.
+                                     */
+                                    Intent localIntent = new Intent(ConstantsCustomGallery.BROADCAST_MIXPANEL_EVENT);
+                                    localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
+                                    LocalBroadcastManager.getInstance(AlbumSelectActivity.this).sendBroadcast(localIntent);
 
                                     Intent intent = new Intent(getApplicationContext(), MediaSelectActivity.class);
                                     intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM, album.getName());
@@ -267,6 +275,11 @@ public class AlbumSelectActivity extends HelperActivity {
             String selection = "";
             List<String> selectionArgs = new ArrayList<>();
 
+            /*
+             * Depending on the type of media allowed, select the right albums.
+             * Mixed : Show albums with either photos or videos
+             * Photo/Video : Show albums with photos or videos
+             */
             switch (ConstantsCustomGallery.mediaStoreType) {
                 case MIXED:
                     selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
@@ -301,8 +314,12 @@ public class AlbumSelectActivity extends HelperActivity {
             }
             albums.clear();
 
-            Album allPhotosAlbum = new Album(ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID, "All Photos", null);
-            Album allVideosAlbum = new Album(ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID, "All Videos", null);
+            /*
+             * These are fake albums for displaying all photos or all videos.
+             * The thumbnail will be the most recent photo or video on the device.
+             */
+            Album allPhotosAlbum = new Album(ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID, getString(R.string.all_photos), null);
+            Album allVideosAlbum = new Album(ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID, getString(R.string.all_videos), null);
 
             switch (ConstantsCustomGallery.mediaStoreType) {
                 case MIXED:
@@ -373,6 +390,9 @@ public class AlbumSelectActivity extends HelperActivity {
         }
     }
 
+    /*
+     * For each album we need to get the thumbnail and also the count (number of items in the album)
+     */
     private void getThumbnailAndCount(Album album) {
 
         long albumId = album.getId();
@@ -380,22 +400,36 @@ public class AlbumSelectActivity extends HelperActivity {
         String selection = "";
         List<String> selectionArgs = new ArrayList<>();
 
+        /*
+         * Only real albums need to query by a bucket id (the album id)
+         */
         if (albumId != ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID &&
                 albumId != ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
             selection = MediaStore.MediaColumns.BUCKET_ID + " = ? AND ";
             selectionArgs.add(String.valueOf(albumId));
         }
 
+        /*
+         * If the media type is only images OR if this is the fake images album
+         * then grab the latest thumbnail for just images
+         */
         if (albumId == ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID ||
                 ConstantsCustomGallery.mediaStoreType == MediaStoreType.IMAGES) {
             selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
             selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
         }
+        /*
+         * If the media type is only videos OR if this is the fake videos album
+         * then grab the latest thumbnail for just videos
+         */
         else if (albumId == ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID ||
                 ConstantsCustomGallery.mediaStoreType == MediaStoreType.VIDEOS) {
             selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
             selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
         }
+        /*
+         * If we get here, then the media type is mixed. So get the thumbnail for either photos or videos
+         */
         else {
             selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
                     + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
@@ -423,7 +457,7 @@ public class AlbumSelectActivity extends HelperActivity {
                 Uri uri = ContentUris.withAppendedId(ConstantsCustomGallery.getQueryUri(), id);
 
                 album.setUri(uri);
-                album.setCount(cursor.getCount());
+                album.setCount(cursor.getCount()); // This is the number of mixed/photos/videos in the album
 
                 try {
                     getContentResolver().openFileDescriptor(uri, "r");
