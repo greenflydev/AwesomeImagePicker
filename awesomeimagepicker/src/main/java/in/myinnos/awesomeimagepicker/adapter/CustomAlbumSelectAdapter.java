@@ -1,5 +1,7 @@
 package in.myinnos.awesomeimagepicker.adapter;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -19,8 +21,6 @@ import java.util.ArrayList;
 import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.models.Album;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
-
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -45,7 +45,7 @@ public class CustomAlbumSelectAdapter extends CustomGenericAdapter<Album> {
 
         try {
             if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.grid_view_item_album_select, null);
+                convertView = layoutInflater.inflate(R.layout.album_select_row_item, null);
 
                 viewHolder = new ViewHolder();
                 viewHolder.imageView = convertView.findViewById(R.id.image_view_album_image);

@@ -26,4 +26,6 @@
     <string name="album_select_videos">videos</string>
     <string name="album_select_photos">photos</string>
     <string name="album_select_media">media</string>
+    <string name="all_photos">All Photos</string>
+    <string name="all_videos">All Videos</string>
 </resources>

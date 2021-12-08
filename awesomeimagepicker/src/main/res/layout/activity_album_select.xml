@@ -36,14 +36,10 @@
         android:layout_centerInParent="true"
         android:text="@string/error_null_cursor" />
 
-    <GridView
-        android:id="@+id/grid_view_album_select"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_below="@id/toolbar_image_picker"
-        android:paddingBottom="1dp"
-        android:paddingStart="1dp"
-        android:paddingEnd="1dp"
-        android:paddingTop="1dp"
-        android:stretchMode="columnWidth" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </RelativeLayout>
