@@ -56,10 +56,7 @@ abstract class AlbumSelectAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        return when (mediaStoreType) {
-            MediaStoreType.MIXED -> albums.size + 2 // Photos and videos at the top
-            else -> albums.size + 1 // Only photos or videos
-        }
+        return albums.size
     }
 
     inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
