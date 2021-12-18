@@ -28,4 +28,8 @@
     <string name="album_select_media">media</string>
     <string name="all_photos">All Photos</string>
     <string name="all_videos">All Videos</string>
+
+    <string name="tab_all_media">All Media</string>
+    <string name="tab_photos">Photos</string>
+    <string name="tab_videos">Videos</string>
 </resources>

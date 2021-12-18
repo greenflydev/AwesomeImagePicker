@@ -27,6 +27,8 @@ import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.tabs.TabLayout;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -52,6 +54,7 @@ public class MediaSelectActivity extends HelperActivity {
 
     private TextView errorDisplay, tvProfile, tvAdd, tvSelectCount;
     private LinearLayout liFinish;
+    private TabLayout tabLayout;
 
     private ProgressBar loader;
     private GridView gridView;
@@ -88,6 +91,7 @@ public class MediaSelectActivity extends HelperActivity {
         tvAdd = findViewById(R.id.tvAdd);
         tvSelectCount = findViewById(R.id.tvSelectCount);
         liFinish = findViewById(R.id.liFinish);
+        tabLayout = findViewById(R.id.tabLayout);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -182,6 +186,8 @@ public class MediaSelectActivity extends HelperActivity {
                 sendIntent();
             }
         });
+
+        setupTabLayout();
     }
 
     @Override
@@ -285,6 +291,62 @@ public class MediaSelectActivity extends HelperActivity {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         orientationBasedUI(newConfig.orientation);
+    }
+
+    /*
+     * Sets up the tabs along the top, if the mode is mixed media.
+     * The user can pick to see all, just photos, or just videos.
+     */
+    private void setupTabLayout() {
+
+        if (mediaStoreType == MediaStoreType.MIXED) {
+
+            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_all_media)));
+            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_photos)));
+            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_videos)));
+            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    if (tab != null) {
+                        tabSelected(tab.getPosition());
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
+        } else {
+            tabLayout.setVisibility(View.GONE);
+        }
+    }
+
+    /*
+     * This will reload the media with the type of media selected
+     */
+    private void tabSelected(int position) {
+
+        switch (position) {
+            case ConstantsCustomGallery.TAB_ALL_MEDIA_POSITION:
+                mediaStoreType = MediaStoreType.MIXED;
+                break;
+            case ConstantsCustomGallery.TAB_PHOTOS_POSITION:
+                mediaStoreType = MediaStoreType.IMAGES;
+                break;
+            case ConstantsCustomGallery.TAB_VIDEOS_POSITION:
+                mediaStoreType = MediaStoreType.VIDEOS;
+                break;
+        }
+
+        loadMedia();
     }
 
     private void orientationBasedUI(int orientation) {

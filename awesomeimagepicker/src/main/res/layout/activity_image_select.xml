@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_image_select"
     android:background="#f4f7f9"
     android:layout_width="match_parent"
@@ -11,19 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <ProgressBar
-        android:id="@+id/loader"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_below="@+id/toolbar_image_picker"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="#ffffff"
+        app:tabTextAppearance="@style/CustomTabText"
+        app:tabBackground="@color/transparent"
+        app:tabIndicatorColor="@color/greenfly_green"
+        app:tabTextColor="@color/black"
+        app:tabSelectedTextColor="@color/greenfly_green"
+        app:tabIndicatorHeight="5dp"
+        app:tabMode="fixed" />
 
     <TextView
         android:id="@+id/textViewEmpty"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar_image_picker"
+        android:layout_below="@id/tabLayout"
         android:paddingTop="130dp"
         android:layout_centerHorizontal="true"
         android:text="@string/activity_media_empty"
@@ -40,10 +47,19 @@
         android:id="@+id/grid_view_image_select"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar_image_picker"
+        android:layout_below="@id/tabLayout"
         android:paddingBottom="1dp"
         android:paddingStart="1dp"
         android:paddingEnd="1dp"
         android:paddingTop="1dp"
         android:stretchMode="columnWidth" />
+
+    <ProgressBar
+        android:id="@+id/loader"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
 </RelativeLayout>

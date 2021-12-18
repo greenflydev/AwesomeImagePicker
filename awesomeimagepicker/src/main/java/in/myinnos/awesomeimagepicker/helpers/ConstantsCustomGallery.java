@@ -28,6 +28,14 @@ public class ConstantsCustomGallery {
     public static final long ALL_VIDEOS_ALBUM_ID = -1002;
 
     /*
+     * When looking at mixed media, at the top will be tabs to select just
+     * photos or videos. These are the tab positions.
+     */
+    public static final int TAB_ALL_MEDIA_POSITION = 0;
+    public static final int TAB_PHOTOS_POSITION = 1;
+    public static final int TAB_VIDEOS_POSITION = 2;
+
+    /*
      * When the user picks an album there will be a local broadcast with the album id.
      * This will be used by the calling application to track mixpanel events.
      */
