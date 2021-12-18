@@ -346,6 +346,15 @@ public class MediaSelectActivity extends HelperActivity {
                 break;
         }
 
+        /*
+         * This will broadcast out that the user filtered to a media type.
+         * Used for tracking in the calling application.
+         */
+        Intent localIntent = new Intent(ConstantsCustomGallery.BROADCAST_EVENT);
+        localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_FILTER_BY_TYPE, true);
+        localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_FILTER_BY_TYPE, position);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+
         loadMedia();
     }
 
