@@ -130,9 +130,11 @@ public class AlbumSelectActivity extends HelperActivity {
                                 public void clicked(int position, Album album) {
 
                                     /*
-                                     * This will broadcast out that the user selected an album. Used for mixpanel tracking.
+                                     * This will broadcast out that the user selected an album.
+                                     * Used for tracking in the calling application.
                                      */
-                                    Intent localIntent = new Intent(ConstantsCustomGallery.BROADCAST_MIXPANEL_EVENT);
+                                    Intent localIntent = new Intent(ConstantsCustomGallery.BROADCAST_EVENT);
+                                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_ALBUM_SELECTED, true);
                                     localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
                                     LocalBroadcastManager.getInstance(AlbumSelectActivity.this).sendBroadcast(localIntent);
 

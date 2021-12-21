@@ -28,10 +28,27 @@ public class ConstantsCustomGallery {
     public static final long ALL_VIDEOS_ALBUM_ID = -1002;
 
     /*
-     * When the user picks an album there will be a local broadcast with the album id.
-     * This will be used by the calling application to track mixpanel events.
+     * When looking at mixed media, at the top will be tabs to select just
+     * photos or videos. These are the tab positions.
      */
-    public static final String BROADCAST_MIXPANEL_EVENT = "BROADCAST_MIXPANEL_EVENT";
+    public static final int TAB_ALL_MEDIA_POSITION = 0;
+    public static final int TAB_PHOTOS_POSITION = 1;
+    public static final int TAB_VIDEOS_POSITION = 2;
+
+    /*
+     * The parent application may need to know when certain events happen. There will be a local
+     * broadcast with action BROADCAST_EVENT and BROADCAST_EVENT_TYPE. This will let the parent
+     * application know what event has triggered.
+     *
+     * Event type: BROADCAST_EVENT_ALBUM_SELECTED = true
+     *  - Property: INTENT_EXTRA_ALBUM_ID = The album id selected
+     *
+     * Event type: BROADCAST_EVENT_FILTER_BY_TYPE = true
+     *  - Property: INTENT_EXTRA_FILTER_BY_TYPE = the tab position for all media, photos, or videos
+     */
+    public static final String BROADCAST_EVENT = "BROADCAST_EVENT";
+    public static final String BROADCAST_EVENT_ALBUM_SELECTED = "BROADCAST_EVENT_ALBUM_SELECTED";
+    public static final String BROADCAST_EVENT_FILTER_BY_TYPE = "BROADCAST_EVENT_FILTER_BY_TYPE";
 
     /**
      * Request code for permission has to be < (1 << 8)
@@ -44,6 +61,7 @@ public class ConstantsCustomGallery {
     public static final String INTENT_EXTRA_MEDIA = "media";
     public static final String INTENT_EXTRA_LIMIT = "limit";
     public static final String INTENT_EXTRA_MEDIASTORETYPE = "mediaStoreType";
+    public static final String INTENT_EXTRA_FILTER_BY_TYPE = "filterByType";
     public static final int DEFAULT_LIMIT = 10;
 
     /*
