@@ -238,6 +238,11 @@ public class MediaSelectActivity extends HelperActivity {
                             tvAdd.setVisibility(View.VISIBLE);
                             tvProfile.setVisibility(View.GONE);
                         }
+
+                        // Make sure the view updates, even if there are no results
+                        if (adapter != null) {
+                            adapter.notifyDataSetChanged();
+                        }
                         break;
                     }
 
