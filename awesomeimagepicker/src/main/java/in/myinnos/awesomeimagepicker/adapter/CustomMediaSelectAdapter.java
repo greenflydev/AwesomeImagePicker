@@ -1,5 +1,7 @@
 package in.myinnos.awesomeimagepicker.adapter;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
@@ -18,10 +20,9 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import in.myinnos.awesomeimagepicker.R;
+import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.Video;
-
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -46,6 +47,7 @@ public class CustomMediaSelectAdapter extends CustomGenericAdapter<Media> {
             viewHolder.iconPlayView = convertView.findViewById(R.id.image_view_icon_play);
             viewHolder.videoDuration = convertView.findViewById(R.id.text_view_duration);
             viewHolder.view = convertView.findViewById(R.id.view_alpha);
+            viewHolder.previouslySelected = convertView.findViewById(R.id.previouslySelected);
 
             convertView.setTag(viewHolder);
 
@@ -66,6 +68,13 @@ public class CustomMediaSelectAdapter extends CustomGenericAdapter<Media> {
         } else {
             viewHolder.view.setAlpha(0.0f);
             ((FrameLayout) convertView).setForeground(null);
+        }
+
+        // Show if the user has already uploaded this media item
+        if (ConstantsCustomGallery.previouslySelectedIds.contains(media.getId())) {
+            viewHolder.previouslySelected.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.previouslySelected.setVisibility(View.GONE);
         }
 
         if (media instanceof Video) {
@@ -111,6 +120,7 @@ public class CustomMediaSelectAdapter extends CustomGenericAdapter<Media> {
         public ImageView iconPlayView;
         public TextView videoDuration;
         public View view;
+        public ImageView previouslySelected;
     }
 
 }
