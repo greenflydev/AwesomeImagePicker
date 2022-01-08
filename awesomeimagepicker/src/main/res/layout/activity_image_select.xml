@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout_image_select"
     android:background="#f4f7f9"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/toolbar_image_picker"
-        layout="@layout/custom_gallery_toolbar"
+    <in.myinnos.awesomeimagepicker.views.CustomToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
-        android:layout_below="@+id/toolbar_image_picker"
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:background="#ffffff"
@@ -27,7 +25,7 @@
         app:tabMode="fixed" />
 
     <TextView
-        android:id="@+id/textViewEmpty"
+        android:id="@+id/empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/tabLayout"
@@ -37,26 +35,22 @@
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/text_view_error"
+        android:id="@+id/error_display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="@string/error_null_cursor" />
 
-    <GridView
-        android:id="@+id/grid_view_image_select"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_below="@id/tabLayout"
-        android:layout_above="@id/tvSelectedCount"
-        android:paddingBottom="1dp"
-        android:paddingStart="1dp"
-        android:paddingEnd="1dp"
-        android:paddingTop="1dp"
-        android:stretchMode="columnWidth" />
+        android:layout_above="@id/selected_count"
+        android:padding="1dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/tvSelectedCount"
+        android:id="@+id/selected_count"
         android:background="#e3e3e3"
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium"

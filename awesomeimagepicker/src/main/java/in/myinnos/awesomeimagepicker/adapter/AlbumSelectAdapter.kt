@@ -1,6 +1,7 @@
 package `in`.myinnos.awesomeimagepicker.adapter
 
 import `in`.myinnos.awesomeimagepicker.R
+import `in`.myinnos.awesomeimagepicker.databinding.AlbumSelectRowItemBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
 import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.MediaStoreType
@@ -19,26 +20,27 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.imageview.ShapeableImageView
 
 abstract class AlbumSelectAdapter(private val context: Context,
-                                  private val albums: List<Album>,
-                                  private val mediaStoreType: MediaStoreType) : RecyclerView.Adapter<AlbumSelectAdapter.ViewHolder>() {
+                                  private val albums: List<Album>) : RecyclerView.Adapter<AlbumSelectAdapter.ViewHolder>() {
 
     private val TAG = AlbumSelectAdapter::class.java.simpleName
 
     open abstract fun clicked(position: Int, album: Album)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.album_select_row_item, parent, false)
-        return ViewHolder(itemView)
+        val binding = AlbumSelectRowItemBinding.inflate(LayoutInflater.from(context), parent, false)
+        return ViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        val binding = holder.binding
 
         try {
             val album: Album = albums[position]
 
             var albumName = "${album.name} (${album.count})"
 
-            holder.textView.text = albumName
+            binding.textView.text = albumName
 
             Glide.with(context)
                 .load(album.uri)
@@ -46,9 +48,9 @@ abstract class AlbumSelectAdapter(private val context: Context,
                 .apply(RequestOptions.overrideOf(200, 200))
                 .apply(RequestOptions.centerCropTransform())
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .into(holder.imageView)
+                .into(binding.imageView)
 
-            holder.rowView.setOnClickListener { clicked(position, album) }
+            binding.rowView.setOnClickListener { clicked(position, album) }
 
         } catch (e: Exception) {
             Log.e(TAG, "Error in getView 2: " + e.message, e)
@@ -59,9 +61,5 @@ abstract class AlbumSelectAdapter(private val context: Context,
         return albums.size
     }
 
-    inner class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
-        val rowView = v.findViewById<RelativeLayout>(R.id.rowView)
-        val imageView = v.findViewById<ShapeableImageView>(R.id.image_view_album_image)
-        val textView = v.findViewById<TextView>(R.id.text_view_album_name)
-    }
+    inner class ViewHolder(val binding: AlbumSelectRowItemBinding) : RecyclerView.ViewHolder(binding.root)
 }

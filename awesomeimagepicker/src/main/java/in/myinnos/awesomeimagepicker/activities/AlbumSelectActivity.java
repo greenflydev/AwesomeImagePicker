@@ -30,24 +30,22 @@ import java.util.Map;
 
 import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.adapter.AlbumSelectAdapter;
+import in.myinnos.awesomeimagepicker.databinding.ActivityAlbumSelectBinding;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Album;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
+import in.myinnos.awesomeimagepicker.views.CustomToolbar;
 
 /**
  * Created by MyInnos on 03-11-2016.
  */
 public class AlbumSelectActivity extends HelperActivity {
+
     private ArrayList<Album> albums;
 
-    private TextView errorDisplay, tvTitle, emptyMessageDisplay;
-    private LinearLayout llBack;
-    private TextView tvDone;
-    private TextView tvSelectedCount;
+    private ActivityAlbumSelectBinding binding;
 
-    private ProgressBar loader;
-    private RecyclerView recyclerView;
     private AlbumSelectAdapter adapter;
 
     private ContentObserver observer;
@@ -67,7 +65,9 @@ public class AlbumSelectActivity extends HelperActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_album_select);
+        binding = ActivityAlbumSelectBinding.inflate(getLayoutInflater());
+
+        setContentView(binding.getRoot());
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -86,31 +86,22 @@ public class AlbumSelectActivity extends HelperActivity {
 
         setMessageDisplays();
 
-        tvTitle = findViewById(R.id.tvTitle);
-        tvTitle.setText(R.string.album_view);
-        llBack = findViewById(R.id.llBack);
-        tvSelectedCount = findViewById(R.id.tvSelectedCount);
-        tvDone = findViewById(R.id.tvDone);
+        binding.toolbar.setTitle(getString(R.string.album_view));
 
-        loader = findViewById(R.id.loader);
-
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(false);
+        binding.recyclerView.setHasFixedSize(false);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(RecyclerView.VERTICAL);
-        recyclerView.setLayoutManager(llm);
+        binding.recyclerView.setLayoutManager(llm);
 
-        llBack.setOnClickListener(new View.OnClickListener() {
+        binding.toolbar.setCallback(new CustomToolbar.Callback() {
             @Override
-            public void onClick(View v) {
+            public void onBack() {
                 finish();
                 overridePendingTransition(abc_fade_in, abc_fade_out);
             }
-        });
 
-        tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onDone() {
                 sendIntent();
             }
         });
@@ -127,16 +118,16 @@ public class AlbumSelectActivity extends HelperActivity {
 
         int selectedCount = ConstantsCustomGallery.currentlySelectedMap.size();
         if (selectedCount == 0) {
-            tvSelectedCount.setVisibility(View.GONE);
-            tvDone.setVisibility(View.GONE);
+            binding.selectedCount.setVisibility(View.GONE);
+            binding.toolbar.showDone(false);
         } else {
             String itemSelected = getString(R.string.item_selected, selectedCount);
             if (selectedCount > 1) {
                 itemSelected = getString(R.string.items_selected, selectedCount);
             }
-            tvSelectedCount.setText(itemSelected);
-            tvSelectedCount.setVisibility(View.VISIBLE);
-            tvDone.setVisibility(View.VISIBLE);
+            binding.selectedCount.setText(itemSelected);
+            binding.selectedCount.setVisibility(View.VISIBLE);
+            binding.toolbar.showDone(true);
         }
     }
 
@@ -181,15 +172,15 @@ public class AlbumSelectActivity extends HelperActivity {
                     }
 
                     case ConstantsCustomGallery.FETCH_STARTED: {
-                        loader.setVisibility(View.VISIBLE);
-                        recyclerView.setVisibility(View.INVISIBLE);
+                        binding.loader.setVisibility(View.VISIBLE);
+                        binding.recyclerView.setVisibility(View.INVISIBLE);
                         break;
                     }
 
                     case ConstantsCustomGallery.FETCH_UPDATED: {
                         if (adapter == null) {
 
-                            adapter = new AlbumSelectAdapter(AlbumSelectActivity.this, albums, ConstantsCustomGallery.mediaStoreType) {
+                            adapter = new AlbumSelectAdapter(AlbumSelectActivity.this, albums) {
                                 @Override
                                 public void clicked(int position, Album album) {
 
@@ -209,10 +200,10 @@ public class AlbumSelectActivity extends HelperActivity {
                                 }
                             };
 
-                            recyclerView.setAdapter(adapter);
+                            binding.recyclerView.setAdapter(adapter);
 
-                            loader.setVisibility(View.GONE);
-                            recyclerView.setVisibility(View.VISIBLE);
+                            binding.loader.setVisibility(View.GONE);
+                            binding.recyclerView.setVisibility(View.VISIBLE);
 
                         } else {
                             adapter.notifyDataSetChanged();
@@ -221,14 +212,14 @@ public class AlbumSelectActivity extends HelperActivity {
                     }
 
                     case ConstantsCustomGallery.ERROR: {
-                        loader.setVisibility(View.GONE);
-                        errorDisplay.setVisibility(View.VISIBLE);
+                        binding.loader.setVisibility(View.GONE);
+                        binding.errorDisplay.setVisibility(View.VISIBLE);
                         break;
                     }
 
                     case ConstantsCustomGallery.EMPTY_LIST: {
-                        loader.setVisibility(View.GONE);
-                        emptyMessageDisplay.setVisibility(View.VISIBLE);
+                        binding.loader.setVisibility(View.GONE);
+                        binding.emptyView.setVisibility(View.VISIBLE);
                     }
                 }
                 return true;
@@ -303,8 +294,8 @@ public class AlbumSelectActivity extends HelperActivity {
     }
 
     private void setMessageDisplays() {
-        errorDisplay = findViewById(R.id.text_view_error);
-        errorDisplay.setVisibility(View.INVISIBLE);
+
+        binding.errorDisplay.setVisibility(View.INVISIBLE);
 
         String mediaTypeName;
 
@@ -318,8 +309,7 @@ public class AlbumSelectActivity extends HelperActivity {
             mediaTypeName = getString(R.string.album_select_media);
         }
 
-        emptyMessageDisplay = findViewById(R.id.textViewEmpty);
-        emptyMessageDisplay.setText(getString(R.string.activity_media_empty, mediaTypeName));
+        binding.emptyView.setText(getString(R.string.activity_media_empty, mediaTypeName));
     }
 
     private void loadAlbums() {
@@ -572,7 +562,7 @@ public class AlbumSelectActivity extends HelperActivity {
 
     @Override
     protected void hideViews() {
-        loader.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.INVISIBLE);
+        binding.loader.setVisibility(View.GONE);
+        binding.recyclerView.setVisibility(View.INVISIBLE);
     }
 }
