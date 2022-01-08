@@ -30,9 +30,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.adapter.CustomMediaSelectAdapter;
@@ -47,20 +46,21 @@ import in.myinnos.awesomeimagepicker.models.Video;
  */
 public class MediaSelectActivity extends HelperActivity {
 
-    private ArrayList<Media> media;
+    private ArrayList<Media> mediaList;
     private String album;
     private long albumId;
     private MediaStoreType mediaStoreType;
 
-    private TextView errorDisplay, tvProfile, tvAdd, tvSelectCount;
-    private LinearLayout liFinish;
+    private TextView errorDisplay, tvTitle, tvDone;
+    private LinearLayout llBack;
     private TabLayout tabLayout;
+    private TextView tvSelectedCount;
 
     private ProgressBar loader;
     private GridView gridView;
     private CustomMediaSelectAdapter adapter;
 
-    private int countSelected;
+//    private int countSelected;
 
     private ContentObserver observer;
     private Handler handler;
@@ -87,11 +87,11 @@ public class MediaSelectActivity extends HelperActivity {
         setContentView(R.layout.activity_image_select);
         setView(findViewById(R.id.layout_image_select));
 
-        tvProfile = findViewById(R.id.tvProfile);
-        tvAdd = findViewById(R.id.tvAdd);
-        tvSelectCount = findViewById(R.id.tvSelectCount);
-        liFinish = findViewById(R.id.liFinish);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvDone = findViewById(R.id.tvDone);
+        llBack = findViewById(R.id.llBack);
         tabLayout = findViewById(R.id.tabLayout);
+        tvSelectedCount = findViewById(R.id.tvSelectedCount);
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -124,24 +124,24 @@ public class MediaSelectActivity extends HelperActivity {
             mediaStoreType = MediaStoreType.VIDEOS;
         }
 
-        int profile = R.string.media_view;
+        int titleId = R.string.media_view;
         switch (mediaStoreType) {
             case VIDEOS:
                 if (ConstantsCustomGallery.limit == 1) {
-                    profile = R.string.single_video_view;
+                    titleId = R.string.single_video_view;
                 } else {
-                    profile = R.string.video_view;
+                    titleId = R.string.video_view;
                 }
                 break;
             case IMAGES:
                 if (ConstantsCustomGallery.limit == 1) {
-                    profile = R.string.single_image_view;
+                    titleId = R.string.single_image_view;
                 } else {
-                    profile = R.string.image_view;
+                    titleId = R.string.image_view;
                 }
                 break;
         }
-        tvProfile.setText(String.format(Locale.ENGLISH, getString(profile), ConstantsCustomGallery.limit));
+        tvTitle.setText(getString(titleId, ConstantsCustomGallery.limit));
 
         errorDisplay = findViewById(R.id.text_view_error);
         errorDisplay.setVisibility(View.INVISIBLE);
@@ -153,34 +153,20 @@ public class MediaSelectActivity extends HelperActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 toggleSelection(position);
-                //actionMode.setTitle(countSelected + " " + getString(R.string.selected));
-                tvSelectCount.setText(countSelected + " " + getString(R.string.selected));
-                tvSelectCount.setVisibility(View.VISIBLE);
-                tvAdd.setVisibility(View.VISIBLE);
-                tvProfile.setVisibility(View.GONE);
 
-                if (countSelected == 0) {
-                    //actionMode.finish();
-                    tvSelectCount.setVisibility(View.GONE);
-                    tvAdd.setVisibility(View.GONE);
-                    tvProfile.setVisibility(View.VISIBLE);
-                }
+                displaySelectedCount();
             }
         });
 
-        liFinish.setOnClickListener(new View.OnClickListener() {
+        llBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (tvSelectCount.getVisibility() == View.VISIBLE) {
-                    deselectAll();
-                } else {
-                    finish();
-                    overridePendingTransition(abc_fade_in, abc_fade_out);
-                }
+                finish();
+                overridePendingTransition(abc_fade_in, abc_fade_out);
             }
         });
 
-        tvAdd.setOnClickListener(new View.OnClickListener() {
+        tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendIntent();
@@ -188,6 +174,29 @@ public class MediaSelectActivity extends HelperActivity {
         });
 
         setupTabLayout();
+
+        /*
+         * If the user changes between albums we need to show the selected count right away
+         * along with the done button
+         */
+        displaySelectedCount();
+    }
+
+    private void displaySelectedCount() {
+
+        int selectedCount = ConstantsCustomGallery.currentlySelectedMap.size();
+        if (selectedCount == 0) {
+            tvSelectedCount.setVisibility(View.GONE);
+            tvDone.setVisibility(View.GONE);
+        } else {
+            String itemSelected = getString(R.string.item_selected, selectedCount);
+            if (selectedCount > 1) {
+                itemSelected = getString(R.string.items_selected, selectedCount);
+            }
+            tvSelectedCount.setText(itemSelected);
+            tvSelectedCount.setVisibility(View.VISIBLE);
+            tvDone.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -214,7 +223,7 @@ public class MediaSelectActivity extends HelperActivity {
                          * Every 50 items we will update the adapter.
                          */
                         if (adapter == null) {
-                            adapter = new CustomMediaSelectAdapter(MediaSelectActivity.this, getApplicationContext(), media);
+                            adapter = new CustomMediaSelectAdapter(MediaSelectActivity.this, getApplicationContext(), mediaList);
                             gridView.setAdapter(adapter);
 
                             loader.setVisibility(View.GONE);
@@ -230,14 +239,7 @@ public class MediaSelectActivity extends HelperActivity {
                         /*
                          * This will update the selected count
                          */
-                        countSelected = msg.arg1;
-                        if (countSelected > 0) {
-                            //actionMode.setTitle(countSelected + " " + getString(R.string.selected));
-                            tvSelectCount.setText(countSelected + " " + getString(R.string.selected));
-                            tvSelectCount.setVisibility(View.VISIBLE);
-                            tvAdd.setVisibility(View.VISIBLE);
-                            tvProfile.setVisibility(View.GONE);
-                        }
+                        displaySelectedCount();
 
                         // Make sure the view updates, even if there are no results
                         if (adapter != null) {
@@ -285,7 +287,7 @@ public class MediaSelectActivity extends HelperActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        media = null;
+        mediaList = null;
         if (adapter != null) {
             adapter.releaseResources();
         }
@@ -390,64 +392,48 @@ public class MediaSelectActivity extends HelperActivity {
     }
 
     private void toggleSelection(int position) {
-        if (!media.get(position).isSelected() && countSelected >= ConstantsCustomGallery.limit) {
+        int countSelected = ConstantsCustomGallery.currentlySelectedMap.size();
+        if (!mediaList.get(position).isSelected() && countSelected >= ConstantsCustomGallery.limit) {
 
-            int message = R.string.media_limit_exceeded;
-            switch (mediaStoreType) {
+            int messageId = R.string.media_limit_exceeded;
+            switch (ConstantsCustomGallery.mediaStoreType) {
                 case VIDEOS:
-                    message = R.string.video_limit_exceeded;
+                    messageId = R.string.video_limit_exceeded;
                     break;
                 case IMAGES:
-                    message = R.string.image_limit_exceeded;
+                    messageId = R.string.image_limit_exceeded;
                     break;
             }
 
             Toast.makeText(
                     getApplicationContext(),
-                    String.format(getString(message), ConstantsCustomGallery.limit),
+                    getString(messageId, ConstantsCustomGallery.limit),
                     Toast.LENGTH_SHORT)
                     .show();
             return;
         }
 
-        media.get(position).setSelected(!media.get(position).isSelected());
-        if (media.get(position).isSelected()) {
-            countSelected++;
+        Media media = mediaList.get(position);
+        media.setSelected(!media.isSelected());
+        if (media.isSelected()) {
+            ConstantsCustomGallery.currentlySelectedMap.put(media.getId(), media);
         } else {
-            countSelected--;
+            ConstantsCustomGallery.currentlySelectedMap.remove(media.getId());
         }
         adapter.notifyDataSetChanged();
-    }
-
-    private void deselectAll() {
-        tvProfile.setVisibility(View.VISIBLE);
-        tvAdd.setVisibility(View.GONE);
-        tvSelectCount.setVisibility(View.GONE);
-
-        for (int i = 0, l = media.size(); i < l; i++) {
-            media.get(i).setSelected(false);
-        }
-        countSelected = 0;
-        adapter.notifyDataSetChanged();
-    }
-
-    private ArrayList<Media> getSelected() {
-        ArrayList<Media> selectedVideos = new ArrayList<>();
-        for (int i = 0, l = media.size(); i < l; i++) {
-            Media item = media.get(i);
-            if (item.isSelected()) {
-                selectedVideos.add(item);
-                // Storing previously selected in memory, to show in the UI if the user has already uploaded it
-                ConstantsCustomGallery.previouslySelectedIds.add(item.getId());
-            }
-        }
-        return selectedVideos;
     }
 
     private void sendIntent() {
 
+        ConstantsCustomGallery.previouslySelectedIds.addAll(ConstantsCustomGallery.currentlySelectedMap.keySet());
+
+        ArrayList<Media> selectedVideos = new ArrayList<>();
+        for (Map.Entry<Long, Media> entrySet : ConstantsCustomGallery.currentlySelectedMap.entrySet()) {
+            selectedVideos.add(entrySet.getValue());
+        }
+
         Intent intent = new Intent();
-        intent.putParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA, getSelected());
+        intent.putParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA, selectedVideos);
         setResult(RESULT_OK, intent);
         finish();
         overridePendingTransition(abc_fade_in, abc_fade_out);
@@ -462,21 +448,12 @@ public class MediaSelectActivity extends HelperActivity {
         public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             /*
-            If the adapter is null, this is first time this activity's view is
-            being shown, hence send FETCH_STARTED message to show progress bar
-            while videos are loaded from phone
+             * If the adapter is null, this is first time this activity's view is
+             * being shown, hence send FETCH_STARTED message to show progress bar
+             * while videos are loaded from phone
              */
             if (adapter == null) {
                 sendMessage(ConstantsCustomGallery.FETCH_STARTED);
-            }
-
-            HashSet<Long> selectedMedia = new HashSet<>();
-            if (media != null) {
-                for (Media m : media) {
-                    if (m.isSelected()) {
-                        selectedMedia.add(m.getId());
-                    }
-                }
             }
 
             String selection = "";
@@ -527,10 +504,10 @@ public class MediaSelectActivity extends HelperActivity {
             int itemCount = 0;
             int pageCount = 50;
 
-            if (media == null) {
-                media = new ArrayList<>();
+            if (mediaList == null) {
+                mediaList = new ArrayList<>();
             }
-            media.clear();
+            mediaList.clear();
 
             if (cursor.moveToLast()) {
                 do {
@@ -559,7 +536,7 @@ public class MediaSelectActivity extends HelperActivity {
                         continue;
                     }
 
-                    boolean isSelected = selectedMedia.contains(id);
+                    boolean isSelected = ConstantsCustomGallery.currentlySelectedMap.containsKey(id);
 
                     if (mimeType.startsWith("image")) {
                         Image image = new Image();
@@ -569,7 +546,7 @@ public class MediaSelectActivity extends HelperActivity {
                         image.setMimeType(mimeType);
                         image.setUri(uri);
                         image.setSelected(isSelected);
-                        media.add(image);
+                        mediaList.add(image);
                     } else {
                         Video video = new Video();
                         video.setId(id);
@@ -579,7 +556,7 @@ public class MediaSelectActivity extends HelperActivity {
                         video.setDuration(duration);
                         video.setUri(uri);
                         video.setSelected(isSelected);
-                        media.add(video);
+                        mediaList.add(video);
                     }
 
                     itemCount++;
@@ -597,14 +574,14 @@ public class MediaSelectActivity extends HelperActivity {
             cursor.close();
 
             /*
-            In case this runnable is executed to onChange calling loadMedia,
-            using countSelected variable can result in a race condition. To avoid that,
-            tempCountSelected keeps track of number of selected videos. On handling
-            FETCH_COMPLETED message, countSelected is assigned value of tempCountSelected.
+             * In case this runnable is executed to onChange calling loadMedia,
+             * using countSelected variable can result in a race condition. To avoid that,
+             * tempCountSelected keeps track of number of selected videos. On handling
+             * FETCH_COMPLETED message, countSelected is assigned value of tempCountSelected.
              */
             int tempCountSelected = 0;
-            for (Media m : media) {
-                if (selectedMedia.contains(m.getId())) {
+            for (Media m : mediaList) {
+                if (ConstantsCustomGallery.currentlySelectedMap.containsKey(m.getId())) {
                     tempCountSelected++;
                     m.setSelected(true);
                 }
@@ -664,13 +641,8 @@ public class MediaSelectActivity extends HelperActivity {
 
     @Override
     public void onBackPressed() {
-        if (tvSelectCount.getVisibility() == View.VISIBLE) {
-            deselectAll();
-        } else {
-            super.onBackPressed();
-            overridePendingTransition(abc_fade_in, abc_fade_out);
-            finish();
-        }
-
+        super.onBackPressed();
+        overridePendingTransition(abc_fade_in, abc_fade_out);
+        finish();
     }
 }

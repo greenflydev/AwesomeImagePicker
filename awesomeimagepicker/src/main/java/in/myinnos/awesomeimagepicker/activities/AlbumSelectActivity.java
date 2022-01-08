@@ -26,11 +26,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.adapter.AlbumSelectAdapter;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Album;
+import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 
 /**
@@ -39,8 +41,10 @@ import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 public class AlbumSelectActivity extends HelperActivity {
     private ArrayList<Album> albums;
 
-    private TextView errorDisplay, tvProfile, emptyMessageDisplay;
-    private LinearLayout liFinish;
+    private TextView errorDisplay, tvTitle, emptyMessageDisplay;
+    private LinearLayout llBack;
+    private TextView tvDone;
+    private TextView tvSelectedCount;
 
     private ProgressBar loader;
     private RecyclerView recyclerView;
@@ -82,9 +86,11 @@ public class AlbumSelectActivity extends HelperActivity {
 
         setMessageDisplays();
 
-        tvProfile = findViewById(R.id.tvProfile);
-        tvProfile.setText(R.string.album_view);
-        liFinish = findViewById(R.id.liFinish);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvTitle.setText(R.string.album_view);
+        llBack = findViewById(R.id.llBack);
+        tvSelectedCount = findViewById(R.id.tvSelectedCount);
+        tvDone = findViewById(R.id.tvDone);
 
         loader = findViewById(R.id.loader);
 
@@ -94,13 +100,71 @@ public class AlbumSelectActivity extends HelperActivity {
         llm.setOrientation(RecyclerView.VERTICAL);
         recyclerView.setLayoutManager(llm);
 
-        liFinish.setOnClickListener(new View.OnClickListener() {
+        llBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
                 overridePendingTransition(abc_fade_in, abc_fade_out);
             }
         });
+
+        tvDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendIntent();
+            }
+        });
+
+        /*
+         * Whenever this is loaded for the first time, clear out the list of selected items.
+         * Only clear it here because the user should be able to go between albums and select
+         * more items.
+         */
+        ConstantsCustomGallery.currentlySelectedMap.clear();
+    }
+
+    private void displaySelectedCount() {
+
+        int selectedCount = ConstantsCustomGallery.currentlySelectedMap.size();
+        if (selectedCount == 0) {
+            tvSelectedCount.setVisibility(View.GONE);
+            tvDone.setVisibility(View.GONE);
+        } else {
+            String itemSelected = getString(R.string.item_selected, selectedCount);
+            if (selectedCount > 1) {
+                itemSelected = getString(R.string.items_selected, selectedCount);
+            }
+            tvSelectedCount.setText(itemSelected);
+            tvSelectedCount.setVisibility(View.VISIBLE);
+            tvDone.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void sendIntent() {
+
+        ConstantsCustomGallery.previouslySelectedIds.addAll(ConstantsCustomGallery.currentlySelectedMap.keySet());
+
+        ArrayList<Media> selectedVideos = new ArrayList<>();
+        for (Map.Entry<Long, Media> entrySet : ConstantsCustomGallery.currentlySelectedMap.entrySet()) {
+            selectedVideos.add(entrySet.getValue());
+        }
+
+        Intent intent = new Intent();
+        intent.putParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA, selectedVideos);
+        setResult(RESULT_OK, intent);
+        finish();
+        overridePendingTransition(abc_fade_in, abc_fade_out);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /*
+         * If the user changes between albums we need to show the selected count right away
+         * along with the done button
+         */
+        displaySelectedCount();
     }
 
     @Override
@@ -202,9 +266,6 @@ public class AlbumSelectActivity extends HelperActivity {
         super.onDestroy();
 
         albums = null;
-//        if (adapter != null) {
-//            adapter.releaseResources();
-//        }
     }
 
     @Override
@@ -360,9 +421,6 @@ public class AlbumSelectActivity extends HelperActivity {
 
                         albums.add(album);
 
-                        /*if (!album.equals("Hiding particular folder")) {
-                            temp.add(new Album(album, image));
-                        }*/
                         albumSet.add(id);
                     }
 

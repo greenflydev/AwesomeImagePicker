@@ -7,16 +7,16 @@
     <string name="permission_package">paquet</string>
 
     <string name="album_view">Sélectionner un album</string>
-    <string name="single_image_view">Sélectionnez jusqu\'à %s photo</string>
-    <string name="single_video_view">Sélectionnez jusqu\'à %s vidéo</string>
-    <string name="image_view">Sélectionnez jusqu\'à %s photos</string>
-    <string name="video_view">Sélectionnez jusqu\'à %s vidéos</string>
-    <string name="media_view">Sélectionnez jusqu\'à %s photos et vidéos</string>
+    <string name="single_image_view">Sélectionnez jusqu\'à %1$d photo</string>
+    <string name="single_video_view">Sélectionnez jusqu\'à %1$d vidéo</string>
+    <string name="image_view">Sélectionnez jusqu\'à %1$d photos</string>
+    <string name="video_view">Sélectionnez jusqu\'à %1$d vidéos</string>
+    <string name="media_view">Sélectionnez jusqu\'à %1$d photos et vidéos</string>
 
     <string name="selected">sélectionné</string>
-    <string name="image_limit_exceeded">Peut sélectionner un maxim de %d photos</string>
-    <string name="video_limit_exceeded">Peut sélectionner un maxim de %d vidéos</string>
-    <string name="media_limit_exceeded">Peut sélectionner un maxim de %d photos et vidéos</string>
+    <string name="image_limit_exceeded">Peut sélectionner un maxim de %1$d photos</string>
+    <string name="video_limit_exceeded">Peut sélectionner un maxim de %1$d vidéos</string>
+    <string name="media_limit_exceeded">Peut sélectionner un maxim de %1$d photos et vidéos</string>
     <string name="error_null_cursor">Oups, un problème est survenu !</string>
     <string name="add">AJOUTER</string>
     <string name="capture_photo">Prendre une photo</string>

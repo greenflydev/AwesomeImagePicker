@@ -9,16 +9,17 @@
     <string name="permission_package">package</string>
 
     <string name="album_view">Select album</string>
-    <string name="single_image_view">Select up to %s photo</string>
-    <string name="single_video_view">Select up to %s video</string>
-    <string name="image_view">Select up to %s photos</string>
-    <string name="video_view">Select up to %s videos</string>
-    <string name="media_view">Select up to %s photos and videos</string>
+    <string name="single_image_view">Select up to %1$d photo</string>
+    <string name="single_video_view">Select up to %1$d video</string>
+    <string name="image_view">Select up to %1$d photos</string>
+    <string name="video_view">Select up to %1$d videos</string>
+    <string name="media_view">Select up to %1$d photos and videos</string>
 
-    <string name="selected">selected</string>
-    <string name="image_limit_exceeded">Can select a maximum of %d photos</string>
-    <string name="video_limit_exceeded">Can select a maximum of %d videos</string>
-    <string name="media_limit_exceeded">Can select a maximum of %d photos and videos</string>
+    <string name="item_selected">%1$d Item Selected</string>
+    <string name="items_selected">%1$d Items Selected</string>
+    <string name="image_limit_exceeded">Can select a maximum of %1$d photos</string>
+    <string name="video_limit_exceeded">Can select a maximum of %1$d videos</string>
+    <string name="media_limit_exceeded">Can select a maximum of %1$d photos and videos</string>
     <string name="error_null_cursor">Oops, something went wrong!</string>
     <string name="add">DONE</string>
     <string name="capture_photo">Capture Photo</string>
