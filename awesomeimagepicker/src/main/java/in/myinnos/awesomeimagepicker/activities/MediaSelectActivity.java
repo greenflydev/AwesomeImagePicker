@@ -434,8 +434,11 @@ public class MediaSelectActivity extends HelperActivity {
     private ArrayList<Media> getSelected() {
         ArrayList<Media> selectedVideos = new ArrayList<>();
         for (int i = 0, l = media.size(); i < l; i++) {
-            if (media.get(i).isSelected()) {
-                selectedVideos.add(media.get(i));
+            Media item = media.get(i);
+            if (item.isSelected()) {
+                selectedVideos.add(item);
+                // Storing previously selected in memory, to show in the UI if the user has already uploaded it
+                ConstantsCustomGallery.previouslySelectedIds.add(item.getId());
             }
         }
         return selectedVideos;

@@ -3,6 +3,9 @@ package in.myinnos.awesomeimagepicker.helpers;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 
 /**
@@ -63,6 +66,12 @@ public class ConstantsCustomGallery {
     public static final String INTENT_EXTRA_MEDIASTORETYPE = "mediaStoreType";
     public static final String INTENT_EXTRA_FILTER_BY_TYPE = "filterByType";
     public static final int DEFAULT_LIMIT = 10;
+
+    /*
+     * Holds a list of ids that the user has already selected to upload. So if the user comes back
+     * while sending several batches they will know where they left off.
+     */
+    public static final Set<Long> previouslySelectedIds = new HashSet<>();
 
     /*
      * Maximum number of media items that can be selected at a time

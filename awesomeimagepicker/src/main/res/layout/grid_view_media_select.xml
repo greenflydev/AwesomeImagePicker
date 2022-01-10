@@ -34,6 +34,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 
+    <ImageView
+        android:id="@+id/previouslySelected"
+        android:visibility="gone"
+        android:background="@drawable/oval_check"
+        android:layout_margin="8dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp" />
+
     <View
         android:id="@+id/view_alpha"
         android:layout_width="match_parent"
