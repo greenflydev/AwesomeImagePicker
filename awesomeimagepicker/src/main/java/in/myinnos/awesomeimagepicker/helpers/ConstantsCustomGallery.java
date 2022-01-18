@@ -3,9 +3,12 @@ package in.myinnos.awesomeimagepicker.helpers;
 import android.net.Uri;
 import android.provider.MediaStore;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
+import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 
 /**
@@ -72,6 +75,8 @@ public class ConstantsCustomGallery {
      * while sending several batches they will know where they left off.
      */
     public static final Set<Long> previouslySelectedIds = new HashSet<>();
+
+    public static final Map<Long, Media> currentlySelectedMap = new HashMap<>();
 
     /*
      * Maximum number of media items that can be selected at a time

@@ -7,16 +7,16 @@
     <string name="permission_package">pacote</string>
 
     <string name="album_view">Selecionar álbum</string>
-    <string name="single_image_view">Selecione até %s foto</string>
-    <string name="single_video_view">Selecione até %s vídeo</string>
-    <string name="image_view">Selecione até %s fotos</string>
-    <string name="video_view">Selecione até %s vídeos</string>
-    <string name="media_view">Selecione até %s fotos e vídeos</string>
+    <string name="single_image_view">Selecione até %1$d foto</string>
+    <string name="single_video_view">Selecione até %1$d vídeo</string>
+    <string name="image_view">Selecione até %1$d fotos</string>
+    <string name="video_view">Selecione até %1$d vídeos</string>
+    <string name="media_view">Selecione até %1$d fotos e vídeos</string>
 
     <string name="selected">selecionado(s)</string>
-    <string name="image_limit_exceeded">É possível selecionar no máximo %d fotos</string>
-    <string name="video_limit_exceeded">É possível selecionar no máximo %d vídeos</string>
-    <string name="media_limit_exceeded">É possível selecionar no máximo %d fotos e vídeos</string>
+    <string name="image_limit_exceeded">É possível selecionar no máximo %1$d fotos</string>
+    <string name="video_limit_exceeded">É possível selecionar no máximo %1$d vídeos</string>
+    <string name="media_limit_exceeded">É possível selecionar no máximo %1$d fotos e vídeos</string>
     <string name="error_null_cursor">Ops, algo deu errado!</string>
     <string name="add">CONCLUÍDO</string>
     <string name="capture_photo">Tirar foto</string>
