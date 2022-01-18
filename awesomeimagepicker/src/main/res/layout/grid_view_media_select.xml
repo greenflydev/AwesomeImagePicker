@@ -28,7 +28,7 @@
         android:textSize="14sp"
         android:textColor="#ffffff"
         android:background="#80000000"
-        android:layout_gravity="bottom|right"
+        android:layout_gravity="bottom|end"
         android:padding="1dp"
         android:layout_margin="8dp"
         android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
     <ImageView
         android:id="@+id/previously_selected"
         android:visibility="gone"
-        android:background="@drawable/oval_check"
+        android:background="@drawable/gray_upload"
         android:layout_margin="8dp"
         android:layout_width="20dp"
         android:layout_height="20dp" />
