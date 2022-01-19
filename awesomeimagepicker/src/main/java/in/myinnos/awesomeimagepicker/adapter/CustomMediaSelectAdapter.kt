@@ -36,11 +36,11 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
         val media = mediaList[position]
 
         if (media.isSelected) {
-            binding.viewAlpha.alpha = 0.5f
-            binding.root.foreground = ContextCompat.getDrawable(context, R.drawable.ic_done_white)
+            binding.viewAlpha.visibility = View.VISIBLE
+            binding.selected.visibility = View.VISIBLE
         } else {
-            binding.viewAlpha.alpha = 0.0f
-            binding.root.foreground = null
+            binding.viewAlpha.visibility = View.GONE
+            binding.selected.visibility = View.GONE
         }
 
         // Show if the user has already uploaded this media item
