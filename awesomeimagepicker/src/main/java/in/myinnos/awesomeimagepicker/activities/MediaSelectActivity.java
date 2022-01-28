@@ -18,14 +18,10 @@ import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.GridView;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.google.android.material.tabs.TabLayout;
 
@@ -35,32 +31,26 @@ import java.util.Map;
 
 import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.adapter.CustomMediaSelectAdapter;
+import in.myinnos.awesomeimagepicker.databinding.ActivityImageSelectBinding;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Image;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 import in.myinnos.awesomeimagepicker.models.Video;
+import in.myinnos.awesomeimagepicker.views.CustomToolbar;
 
 /**
  * Created by MyInnos on 03-11-2016.
  */
 public class MediaSelectActivity extends HelperActivity {
 
+    private ActivityImageSelectBinding binding;
+
     private ArrayList<Media> mediaList;
-    private String album;
     private long albumId;
     private MediaStoreType mediaStoreType;
 
-    private TextView errorDisplay, tvTitle, tvDone;
-    private LinearLayout llBack;
-    private TabLayout tabLayout;
-    private TextView tvSelectedCount;
-
-    private ProgressBar loader;
-    private GridView gridView;
     private CustomMediaSelectAdapter adapter;
-
-//    private int countSelected;
 
     private ContentObserver observer;
     private Handler handler;
@@ -84,20 +74,15 @@ public class MediaSelectActivity extends HelperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_select);
-        setView(findViewById(R.id.layout_image_select));
 
-        tvTitle = findViewById(R.id.tvTitle);
-        tvDone = findViewById(R.id.tvDone);
-        llBack = findViewById(R.id.llBack);
-        tabLayout = findViewById(R.id.tabLayout);
-        tvSelectedCount = findViewById(R.id.tvSelectedCount);
+        binding = ActivityImageSelectBinding.inflate(getLayoutInflater());
+
+        setContentView(binding.getRoot());
 
         Intent intent = getIntent();
         if (intent == null) {
             finish();
         }
-        album = intent.getStringExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM);
         albumId = intent.getLongExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, 0);
 
         /*
@@ -141,34 +126,19 @@ public class MediaSelectActivity extends HelperActivity {
                 }
                 break;
         }
-        tvTitle.setText(getString(titleId, ConstantsCustomGallery.limit));
+        binding.toolbar.setTitle(getString(titleId, ConstantsCustomGallery.limit));
 
-        errorDisplay = findViewById(R.id.text_view_error);
-        errorDisplay.setVisibility(View.INVISIBLE);
+        binding.errorDisplay.setVisibility(View.INVISIBLE);
 
-        loader = findViewById(R.id.loader);
-        gridView = findViewById(R.id.grid_view_image_select);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        binding.toolbar.setCallback(new CustomToolbar.Callback() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                toggleSelection(position);
-
-                displaySelectedCount();
-            }
-        });
-
-        llBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            public void onBack() {
                 finish();
                 overridePendingTransition(abc_fade_in, abc_fade_out);
             }
-        });
 
-        tvDone.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onDone() {
                 sendIntent();
             }
         });
@@ -186,16 +156,16 @@ public class MediaSelectActivity extends HelperActivity {
 
         int selectedCount = ConstantsCustomGallery.currentlySelectedMap.size();
         if (selectedCount == 0) {
-            tvSelectedCount.setVisibility(View.GONE);
-            tvDone.setVisibility(View.GONE);
+            binding.selectedCount.setVisibility(View.GONE);
+            binding.toolbar.showDone(false);
         } else {
             String itemSelected = getString(R.string.item_selected, selectedCount);
             if (selectedCount > 1) {
                 itemSelected = getString(R.string.items_selected, selectedCount);
             }
-            tvSelectedCount.setText(itemSelected);
-            tvSelectedCount.setVisibility(View.VISIBLE);
-            tvDone.setVisibility(View.VISIBLE);
+            binding.selectedCount.setText(itemSelected);
+            binding.selectedCount.setVisibility(View.VISIBLE);
+            binding.toolbar.showDone(true);
         }
     }
 
@@ -203,59 +173,66 @@ public class MediaSelectActivity extends HelperActivity {
     protected void onStart() {
         super.onStart();
 
-        handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                switch (msg.what) {
-                    case ConstantsCustomGallery.PERMISSION_GRANTED: {
-                        loadMedia();
-                        break;
-                    }
+        handler = new Handler(msg -> {
 
-                    case ConstantsCustomGallery.FETCH_STARTED: {
-                        loader.setVisibility(View.VISIBLE);
-                        gridView.setVisibility(View.INVISIBLE);
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.FETCH_UPDATED: {
-                        /*
-                         * Every 50 items we will update the adapter.
-                         */
-                        if (adapter == null) {
-                            adapter = new CustomMediaSelectAdapter(MediaSelectActivity.this, getApplicationContext(), mediaList);
-                            gridView.setAdapter(adapter);
-
-                            loader.setVisibility(View.GONE);
-                            gridView.setVisibility(View.VISIBLE);
-                            orientationBasedUI(getResources().getConfiguration().orientation);
-                        } else {
-                            adapter.notifyDataSetChanged();
-                        }
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.FETCH_COMPLETED: {
-                        /*
-                         * This will update the selected count
-                         */
-                        displaySelectedCount();
-
-                        // Make sure the view updates, even if there are no results
-                        if (adapter != null) {
-                            adapter.notifyDataSetChanged();
-                        }
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.ERROR: {
-                        loader.setVisibility(View.GONE);
-                        errorDisplay.setVisibility(View.VISIBLE);
-                        break;
-                    }
+            switch (msg.what) {
+                case ConstantsCustomGallery.PERMISSION_GRANTED: {
+                    loadMedia();
+                    break;
                 }
-                return true;
+
+                case ConstantsCustomGallery.FETCH_STARTED: {
+                    binding.loader.setVisibility(View.VISIBLE);
+                    binding.recyclerView.setVisibility(View.INVISIBLE);
+                    break;
+                }
+
+                case ConstantsCustomGallery.FETCH_UPDATED: {
+                    /*
+                     * Every 50 items we will update the adapter.
+                     */
+                    if (adapter == null) {
+
+                        adapter = new CustomMediaSelectAdapter(MediaSelectActivity.this, mediaList) {
+                            @Override
+                            public void clicked(int position) {
+
+                                toggleSelection(position);
+
+                                displaySelectedCount();
+                            }
+                        };
+                        binding.recyclerView.setAdapter(adapter);
+
+                        binding.loader.setVisibility(View.GONE);
+                        binding.recyclerView.setVisibility(View.VISIBLE);
+                        orientationBasedUI(getResources().getConfiguration().orientation);
+                    } else {
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
+                }
+
+                case ConstantsCustomGallery.FETCH_COMPLETED: {
+                    /*
+                     * This will update the selected count
+                     */
+                    displaySelectedCount();
+
+                    // Make sure the view updates, even if there are no results
+                    if (adapter != null) {
+                        adapter.notifyDataSetChanged();
+                    }
+                    break;
+                }
+
+                case ConstantsCustomGallery.ERROR: {
+                    binding.loader.setVisibility(View.GONE);
+                    binding.errorDisplay.setVisibility(View.VISIBLE);
+                    break;
+                }
             }
+            return true;
         });
         observer = new ContentObserver(handler) {
             @Override
@@ -286,12 +263,7 @@ public class MediaSelectActivity extends HelperActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         mediaList = null;
-        if (adapter != null) {
-            adapter.releaseResources();
-        }
-        gridView.setOnItemClickListener(null);
     }
 
     @Override
@@ -308,12 +280,12 @@ public class MediaSelectActivity extends HelperActivity {
 
         if (mediaStoreType == MediaStoreType.MIXED) {
 
-            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_all_media)));
-            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_photos)));
-            tabLayout.addTab(tabLayout.newTab().setText(getString(R.string.tab_videos)));
-            tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all_media)));
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_photos)));
+            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_videos)));
+            binding.tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     if (tab != null) {
@@ -332,7 +304,7 @@ public class MediaSelectActivity extends HelperActivity {
                 }
             });
         } else {
-            tabLayout.setVisibility(View.GONE);
+            binding.tabLayout.setVisibility(View.GONE);
         }
     }
 
@@ -370,11 +342,12 @@ public class MediaSelectActivity extends HelperActivity {
         final DisplayMetrics metrics = new DisplayMetrics();
         windowManager.getDefaultDisplay().getMetrics(metrics);
 
-        if (adapter != null) {
-            int size = orientation == Configuration.ORIENTATION_PORTRAIT ? metrics.widthPixels / 3 : metrics.widthPixels / 5;
-            adapter.setLayoutParams(size);
-        }
-        gridView.setNumColumns(orientation == Configuration.ORIENTATION_PORTRAIT ? 3 : 5);
+        int spanCount = (orientation == Configuration.ORIENTATION_PORTRAIT) ? 3 : 5;
+
+        binding.recyclerView.setHasFixedSize(false);
+
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
+        binding.recyclerView.setLayoutManager(gridLayoutManager);
     }
 
     @Override
@@ -635,8 +608,8 @@ public class MediaSelectActivity extends HelperActivity {
 
     @Override
     protected void hideViews() {
-        loader.setVisibility(View.GONE);
-        gridView.setVisibility(View.INVISIBLE);
+        binding.loader.setVisibility(View.GONE);
+        binding.recyclerView.setVisibility(View.INVISIBLE);
     }
 
     @Override

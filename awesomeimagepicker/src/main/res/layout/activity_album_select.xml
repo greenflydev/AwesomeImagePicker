@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_album_select"
-    android:background="#f4f7f9"
+    android:background="#ffffff"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <include
-        android:id="@+id/toolbar_image_picker"
-        layout="@layout/custom_gallery_toolbar"
+    <in.myinnos.awesomeimagepicker.views.CustomToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -20,17 +18,17 @@
         android:visibility="gone" />
 
     <TextView
-        android:id="@+id/textViewEmpty"
+        android:id="@+id/empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar_image_picker"
+        android:layout_below="@id/toolbar"
         android:paddingTop="130dp"
         android:layout_centerHorizontal="true"
         android:text="@string/activity_media_empty"
         android:visibility="gone"/>
 
     <TextView
-        android:id="@+id/text_view_error"
+        android:id="@+id/error_display"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -38,13 +36,13 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_below="@id/toolbar_image_picker"
-        android:layout_above="@id/tvSelectedCount"
+        android:layout_below="@id/toolbar"
+        android:layout_above="@id/selected_count"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/tvSelectedCount"
+        android:id="@+id/selected_count"
         android:background="#e3e3e3"
         android:textColor="#000000"
         android:fontFamily="sans-serif-medium"
