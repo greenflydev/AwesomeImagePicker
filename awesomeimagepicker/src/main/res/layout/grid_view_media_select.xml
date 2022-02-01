@@ -38,7 +38,7 @@
         android:id="@+id/previously_selected"
         android:visibility="gone"
         android:background="@drawable/gray_upload"
-        android:layout_margin="8dp"
+        android:layout_margin="6dp"
         android:layout_width="20dp"
         android:layout_height="20dp" />
 
@@ -47,5 +47,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/multiple_image_select_imageSelectBackground" />
+
+    <ImageView
+        android:id="@+id/selected"
+        android:visibility="gone"
+        android:layout_gravity="bottom|end"
+        android:background="@drawable/blue_check"
+        android:layout_margin="6dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp" />
 
 </in.myinnos.awesomeimagepicker.views.SquareFrameLayout>

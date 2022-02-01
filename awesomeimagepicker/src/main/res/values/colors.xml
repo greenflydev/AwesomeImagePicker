@@ -9,7 +9,7 @@
 
     <color name="multiple_image_select_primary">#FFFFFF</color>
     <color name="multiple_image_select_albumTextBackground">@color/colorPrimary</color>
-    <color name="multiple_image_select_imageSelectBackground">#000000</color>
+    <color name="multiple_image_select_imageSelectBackground">#66000000</color>
 
     <color name="greenfly_green">#2dc563</color>
     <color name="black">#000000</color>
