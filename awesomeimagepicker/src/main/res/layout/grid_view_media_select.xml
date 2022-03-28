@@ -37,7 +37,7 @@
     <ImageView
         android:id="@+id/previously_selected"
         android:visibility="gone"
-        android:background="@drawable/gray_upload"
+        android:background="@drawable/cloud_upload"
         android:layout_margin="6dp"
         android:layout_width="20dp"
         android:layout_height="20dp" />
