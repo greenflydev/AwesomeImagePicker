@@ -39,8 +39,8 @@
         android:visibility="gone"
         android:background="@drawable/cloud_upload"
         android:layout_margin="6dp"
-        android:layout_width="20dp"
-        android:layout_height="20dp" />
+        android:layout_width="24dp"
+        android:layout_height="24dp" />
 
     <View
         android:id="@+id/view_alpha"
