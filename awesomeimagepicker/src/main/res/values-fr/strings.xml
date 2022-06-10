@@ -13,15 +13,22 @@
     <string name="video_view">Sélectionnez jusqu\'à %1$d vidéos</string>
     <string name="media_view">Sélectionnez jusqu\'à %1$d photos et vidéos</string>
 
-    <string name="selected">sélectionné</string>
-    <string name="image_limit_exceeded">Peut sélectionner un maxim de %1$d photos</string>
-    <string name="video_limit_exceeded">Peut sélectionner un maxim de %1$d vidéos</string>
-    <string name="media_limit_exceeded">Peut sélectionner un maxim de %1$d photos et vidéos</string>
+    <string name="item_selected">%1$d élément sélectionné</string>
+    <string name="items_selected">%1$d éléments sélectionnés</string>
+    <string name="image_limit_exceeded">Peut sélectionner un maximum de %1$d photos</string>
+    <string name="video_limit_exceeded">Peut sélectionner un maximum de %1$d vidéos</string>
+    <string name="media_limit_exceeded">Peut sélectionner un maximum de %1$d photos et vidéos</string>
     <string name="error_null_cursor">Oups, un problème est survenu !</string>
-    <string name="add">AJOUTER</string>
+    <string name="add">TERMINÉ</string>
     <string name="capture_photo">Prendre une photo</string>
     <string name="activity_media_empty">Vous n\'avez pas de %1$s à importer sur votre appareil.</string>
     <string name="album_select_videos">vidéos</string>
     <string name="album_select_photos">photos</string>
     <string name="album_select_media">médias</string>
+    <string name="all_photos">Toutes les photos</string>
+    <string name="all_videos">Toutes les vidéos</string>
+
+    <string name="tab_all_media">Tous les médias</string>
+    <string name="tab_photos">Photos</string>
+    <string name="tab_videos">Vidéos</string>
 </resources>

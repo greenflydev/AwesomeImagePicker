@@ -13,7 +13,8 @@
     <string name="video_view">Selecciona hasta %1$d videos</string>
     <string name="media_view">Selecciona hasta %1$d fotos y videos</string>
 
-    <string name="selected">seleccionado</string>
+    <string name="item_selected">%1$d elemento seleccionado</string>
+    <string name="items_selected">%1$d elementos seleccionado</string>
     <string name="image_limit_exceeded">Puedes seleccionar un máximo de %1$d fotos</string>
     <string name="video_limit_exceeded">Puedes seleccionar un máximo de %1$d videos</string>
     <string name="media_limit_exceeded">Puedes seleccionar un máximo de %1$d fotos y videos</string>
@@ -24,4 +25,10 @@
     <string name="album_select_videos">videos</string>
     <string name="album_select_photos">fotos</string>
     <string name="album_select_media">archivos</string>
+    <string name="all_photos">Todas las fotos</string>
+    <string name="all_videos">Todos los videos</string>
+
+    <string name="tab_all_media">Todos los archivos</string>
+    <string name="tab_photos">Fotos</string>
+    <string name="tab_videos">Videos</string>
 </resources>
