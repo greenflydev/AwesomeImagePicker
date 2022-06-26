@@ -133,10 +133,12 @@ public class AlbumSelectActivity extends HelperActivity {
 
     private void sendIntent() {
 
-        ConstantsCustomGallery.previouslySelectedIds.addAll(ConstantsCustomGallery.currentlySelectedMap.keySet());
+
+        ConstantsCustomGallery.getPreviouslySelectedIds(this).addAll(ConstantsCustomGallery.currentlySelectedMap.keySet());
+        ConstantsCustomGallery.savePreviouslySelectedIds(this);
 
         ArrayList<Media> selectedVideos = new ArrayList<>();
-        for (Map.Entry<Long, Media> entrySet : ConstantsCustomGallery.currentlySelectedMap.entrySet()) {
+        for (Map.Entry<String, Media> entrySet : ConstantsCustomGallery.currentlySelectedMap.entrySet()) {
             selectedVideos.add(entrySet.getValue());
         }
 

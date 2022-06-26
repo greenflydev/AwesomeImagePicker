@@ -44,7 +44,7 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
         }
 
         // Show if the user has already uploaded this media item
-        if (ConstantsCustomGallery.previouslySelectedIds.contains(media.id)) {
+        if (ConstantsCustomGallery.getPreviouslySelectedIds(context).contains(media.id.toString())) {
             binding.previouslySelected.visibility = View.VISIBLE
         } else {
             binding.previouslySelected.visibility = View.GONE
