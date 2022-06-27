@@ -1,5 +1,7 @@
 package in.myinnos.awesomeimagepicker.helpers;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -70,13 +72,16 @@ public class ConstantsCustomGallery {
     public static final String INTENT_EXTRA_FILTER_BY_TYPE = "filterByType";
     public static final int DEFAULT_LIMIT = 10;
 
+    public static final String SP_NAME_MAIN = "SP_NAME_MAIN";
+    public static final String SP_PREVIOUSLY_SELECTED_IDS = "SP_PREVIOUSLY_SELECTED_IDS";
+
     /*
      * Holds a list of ids that the user has already selected to upload. So if the user comes back
      * while sending several batches they will know where they left off.
      */
-    public static final Set<Long> previouslySelectedIds = new HashSet<>();
+    private static Set<String> previouslySelectedIds = null;
 
-    public static final Map<Long, Media> currentlySelectedMap = new HashMap<>();
+    public static final Map<String, Media> currentlySelectedMap = new HashMap<>();
 
     /*
      * Maximum number of media items that can be selected at a time
@@ -88,5 +93,43 @@ public class ConstantsCustomGallery {
 
     public static Uri getQueryUri() {
         return MediaStore.Files.getContentUri("external"); // API 29 : MediaStore.VOLUME_EXTERNAL
+    }
+
+    /*
+     * This will load the saved previously selected ids from shared preferences.
+     * If they are already loaded then it will return it.
+     */
+    public static Set<String> getPreviouslySelectedIds(Context context) {
+        if (previouslySelectedIds != null) {
+            return previouslySelectedIds;
+        }
+
+        previouslySelectedIds = getStringSetFromMainSP(context, SP_PREVIOUSLY_SELECTED_IDS);
+        if (previouslySelectedIds == null) {
+            previouslySelectedIds = new HashSet<>();
+        }
+        return previouslySelectedIds;
+    }
+
+    /*
+     * This will save the set of previously selected ids
+     */
+    public static void savePreviouslySelectedIds(Context context) {
+        saveStringSetToMainSP(context, SP_PREVIOUSLY_SELECTED_IDS, previouslySelectedIds);
+    }
+
+    private static void saveStringSetToMainSP(Context context, String key, Set<String> value) {
+        if (context != null) {
+            SharedPreferences sp = context.getSharedPreferences(SP_NAME_MAIN, 0);
+            sp.edit().putStringSet(key, value).commit();
+        }
+    }
+
+    private static Set<String> getStringSetFromMainSP(Context context, String key) {
+        if (context != null) {
+            SharedPreferences sp = context.getSharedPreferences(SP_NAME_MAIN, 0);
+            return sp.getStringSet(key, new HashSet<>());
+        }
+        return new HashSet<>();
     }
 }

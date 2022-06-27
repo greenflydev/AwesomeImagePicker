@@ -389,19 +389,20 @@ public class MediaSelectActivity extends HelperActivity {
         Media media = mediaList.get(position);
         media.setSelected(!media.isSelected());
         if (media.isSelected()) {
-            ConstantsCustomGallery.currentlySelectedMap.put(media.getId(), media);
+            ConstantsCustomGallery.currentlySelectedMap.put(String.valueOf(media.getId()), media);
         } else {
-            ConstantsCustomGallery.currentlySelectedMap.remove(media.getId());
+            ConstantsCustomGallery.currentlySelectedMap.remove(String.valueOf(media.getId()));
         }
         adapter.notifyDataSetChanged();
     }
 
     private void sendIntent() {
 
-        ConstantsCustomGallery.previouslySelectedIds.addAll(ConstantsCustomGallery.currentlySelectedMap.keySet());
+        ConstantsCustomGallery.getPreviouslySelectedIds(this).addAll(ConstantsCustomGallery.currentlySelectedMap.keySet());
+        ConstantsCustomGallery.savePreviouslySelectedIds(this);
 
         ArrayList<Media> selectedVideos = new ArrayList<>();
-        for (Map.Entry<Long, Media> entrySet : ConstantsCustomGallery.currentlySelectedMap.entrySet()) {
+        for (Map.Entry<String, Media> entrySet : ConstantsCustomGallery.currentlySelectedMap.entrySet()) {
             selectedVideos.add(entrySet.getValue());
         }
 
