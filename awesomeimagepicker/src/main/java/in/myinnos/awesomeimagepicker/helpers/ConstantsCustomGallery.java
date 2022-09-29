@@ -58,12 +58,6 @@ public class ConstantsCustomGallery {
     public static final String BROADCAST_EVENT_ALBUM_SELECTED = "BROADCAST_EVENT_ALBUM_SELECTED";
     public static final String BROADCAST_EVENT_FILTER_BY_TYPE = "BROADCAST_EVENT_FILTER_BY_TYPE";
 
-    /**
-     * Request code for permission has to be < (1 << 8)
-     * Otherwise throws java.lang.IllegalArgumentException: Can only use lower 8 bits for requestCode
-     */
-    public static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 23;
-
     public static final String INTENT_EXTRA_ALBUM_ID = "albumId";
     public static final String INTENT_EXTRA_ALBUM = "album";
     public static final String INTENT_EXTRA_MEDIA = "media";

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.Settings;
 import android.view.View;
 
@@ -33,21 +34,27 @@ public class HelperActivity extends Activity {
     }
 
     protected void checkPermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            permissionGranted();
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                permissionGranted();
+            } else {
+                ActivityCompat.requestPermissions(this, permissions, ConstantsCustomGallery.PERMISSION_REQUEST_CODE);
+            }
         } else {
-            ActivityCompat.requestPermissions(this, permissions, ConstantsCustomGallery.PERMISSION_REQUEST_CODE);
+            permissionGranted();
         }
     }
 
     private void requestPermission() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            showRequestPermissionRationale();
 
-        } else {
-            showAppPermissionSettings();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showRequestPermissionRationale();
+            } else {
+                showAppPermissionSettings();
+            }
         }
     }
 
