@@ -2,22 +2,22 @@ package `in`.myinnos.awesomeimagepicker.adapter
 
 import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.databinding.GridViewMediaSelectBinding
+import `in`.myinnos.awesomeimagepicker.databinding.PreviewVideoBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
 import `in`.myinnos.awesomeimagepicker.models.Media
 import `in`.myinnos.awesomeimagepicker.models.Video
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.LAYOUT_INFLATER_SERVICE
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.PopupMenu
-import android.widget.PopupWindow
-import android.widget.VideoView
-import androidx.constraintlayout.widget.ConstraintLayout
+import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -83,22 +83,7 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
 
         if (media is Video) {
             binding.root.setOnLongClickListener {
-
-                val popup = PopupMenu(context, it)
-                popup.menuInflater.inflate(R.menu.play_video_menu, popup.menu)
-
-                //popup.menu.getItem(0).setTitle(text)
-
-                popup.setOnMenuItemClickListener { item ->
-                    val itemId = item.itemId
-                    if (itemId == R.id.previewVideo) {
-                        previewVideo(binding.root, media)
-                    }
-                    popup.dismiss()
-                    true
-                }
-
-                popup.show()
+                previewVideo(media)
                 true
             }
         } else {
@@ -118,7 +103,79 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
                 .into(binding.imageView)
     }
 
-    private fun previewVideo(view: View, media: Media) {
+    private fun previewVideo(media: Media) {
+
+        val binding = PreviewVideoBinding.inflate(LayoutInflater.from(context))
+
+        val builder = AlertDialog.Builder(context)
+        builder.setView(binding.root)
+        builder.setCancelable(true)
+
+        val dialog = builder.create()
+
+        dialog.setOnDismissListener {
+            binding.videoView.stopPlayback()
+        }
+
+        binding.root.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        val displayMetrics = DisplayMetrics()
+        (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val height = displayMetrics.heightPixels
+        val width = displayMetrics.widthPixels
+
+        var originalWidth = 0
+        var originalHeight = 0
+
+        binding.videoView.setVideoURI(media.uri)
+        binding.videoView.setOnPreparedListener { mediaPlayer ->
+
+            binding.videoView.setBackgroundColor(Color.TRANSPARENT)
+
+            originalWidth = mediaPlayer.videoWidth
+            originalHeight = mediaPlayer.videoHeight
+
+            if (originalWidth != 0 && originalHeight != 0) {
+
+                val layoutParams = binding.videoView.layoutParams
+                val orientation = context.resources.configuration.orientation
+
+//                // Landscape or Square
+//                if (originalWidth >= originalHeight) {
+//                    layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT
+//                    layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT
+//                }
+//                // Portrait
+//                else {
+//                    layoutParams.width = RelativeLayout.LayoutParams.WRAP_CONTENT
+//                    layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT
+//                }
+//                binding.videoView.layoutParams = layoutParams
+            }
+
+            /*
+                val videoRatio = mediaPlayer.videoWidth / mediaPlayer.videoHeight.toFloat()
+                val screenRatio = videoView.width / videoView.height.toFloat()
+                val scaleX = videoRatio / screenRatio
+                if (scaleX >= 1f) {
+                    videoView.scaleX = scaleX
+                } else {
+                    videoView.scaleY = 1f / scaleX
+                }
+             */
+
+            mediaPlayer.setVolume(0f, 0f);
+            mediaPlayer.isLooping = true;
+
+            binding.videoView.start()
+        }
+
+        dialog.show()
+    }
+
+    private fun previewVideoOld(view: View, media: Media) {
 
         val inflater = context.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val popupView: View = inflater.inflate(R.layout.preview_video, null)
@@ -132,39 +189,50 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
 
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window tolken
-
-        // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
         popupWindow.showAtLocation(view , Gravity.CENTER, 0, 0)
 
-        //val videoViewHolder = popupView.findViewById<ConstraintLayout>(R.id.video_view_holder)
-        //videoViewHolder.clipToOutline = true
-        //popupView.clipToOutline = true
-
         val videoView = popupView.findViewById<VideoView>(R.id.video_view)
+
+        popupView.setOnClickListener {
+            popupWindow.dismiss()
+        }
+
+        popupWindow.setOnDismissListener {
+            videoView.stopPlayback()
+        }
+
+        var originalWidth = 0
+        var originalHeight = 0
 
         videoView.setVideoURI(media.uri)
         videoView.setOnPreparedListener { mediaPlayer ->
 
-            val videoRatio = mediaPlayer.videoWidth / mediaPlayer.videoHeight.toFloat()
-            val screenRatio = videoView.width / videoView.height.toFloat()
-            val scaleX = videoRatio / screenRatio
-            if (scaleX >= 1f) {
-                videoView.scaleX = scaleX
-            } else {
-                videoView.scaleY = 1f / scaleX
+            originalWidth = mediaPlayer.videoWidth
+            originalHeight = mediaPlayer.videoHeight
+
+            if (originalWidth != 0 && originalHeight != 0) {
+
+                val layoutParams = videoView.layoutParams
+                val orientation = context.resources.configuration.orientation
+
+                // Landscape or Square
+                if (originalWidth >= originalHeight) {
+                    layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT
+                    layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT
+                }
+                // Portrait
+                else {
+                    // Orientation doesn't matter for portrait
+                    layoutParams.width = RelativeLayout.LayoutParams.WRAP_CONTENT
+                    layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                }
+                videoView.layoutParams = layoutParams
             }
 
             mediaPlayer.setVolume(0f, 0f);
-            mediaPlayer.setLooping(true);
+            mediaPlayer.isLooping = true;
 
             videoView.start()
-        }
-
-        val close = popupView.findViewById<ImageView>(R.id.close)
-        close.setOnClickListener {
-            videoView.stopPlayback()
-            popupWindow.dismiss()
         }
     }
 
