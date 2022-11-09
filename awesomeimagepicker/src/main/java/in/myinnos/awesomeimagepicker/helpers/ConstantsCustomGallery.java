@@ -2,6 +2,7 @@ package in.myinnos.awesomeimagepicker.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -125,5 +126,9 @@ public class ConstantsCustomGallery {
             return sp.getStringSet(key, new HashSet<>());
         }
         return new HashSet<>();
+    }
+
+    public static int dpToPx(double dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 }

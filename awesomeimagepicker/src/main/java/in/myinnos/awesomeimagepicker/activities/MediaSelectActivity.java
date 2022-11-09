@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.graphics.BlurMaskFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -194,12 +197,18 @@ public class MediaSelectActivity extends HelperActivity {
                     if (adapter == null) {
 
                         adapter = new CustomMediaSelectAdapter(MediaSelectActivity.this, mediaList) {
+
                             @Override
                             public void clicked(int position) {
 
                                 toggleSelection(position);
 
                                 displaySelectedCount();
+                            }
+
+                            @Override
+                            public void previewVideo(@NonNull Media media) {
+                                MediaSelectActivity.this.previewVideo(media);
                             }
                         };
                         binding.recyclerView.setAdapter(adapter);
@@ -243,6 +252,36 @@ public class MediaSelectActivity extends HelperActivity {
         getContentResolver().registerContentObserver(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, false, observer);
 
         checkPermission();
+    }
+
+    private void previewVideo(Media media) {
+
+        /*
+         * If the user plays more than one video, the VideoView will be hidden.
+         * Need to make it visible again before the video can be prepared.
+         */
+        binding.videoView.setVisibility(View.VISIBLE);
+
+        binding.videoView.setVideoURI(media.getUri());
+        binding.videoView.setOnPreparedListener(mediaPlayer -> {
+
+            mediaPlayer.setVolume(0f, 0f);
+            mediaPlayer.setLooping(true);
+
+            binding.videoView.start();
+        });
+
+        /*
+         * When the video closes we need to stop the playback but also need to hide the VideoView
+         * Not doing this will show a second of the previous video when launching a second one.
+         */
+        binding.videoViewHolder.setOnClickListener(view -> {
+            binding.videoView.stopPlayback();
+            binding.videoView.setVisibility(View.GONE);
+            binding.videoViewHolder.setVisibility(View.GONE);
+        });
+
+        binding.videoViewHolder.setVisibility(View.VISIBLE);
     }
 
     @Override
