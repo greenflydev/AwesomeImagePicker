@@ -57,4 +57,11 @@
         android:layout_width="25dp"
         android:layout_height="25dp" />
 
+    <View
+        android:id="@+id/touch_view"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </in.myinnos.awesomeimagepicker.views.SquareFrameLayout>

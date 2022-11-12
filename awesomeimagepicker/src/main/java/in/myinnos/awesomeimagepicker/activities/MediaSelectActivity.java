@@ -8,9 +8,8 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.graphics.BlurMaskFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +18,7 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
 
@@ -26,6 +26,9 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -207,8 +210,12 @@ public class MediaSelectActivity extends HelperActivity {
                             }
 
                             @Override
-                            public void previewVideo(@NonNull Media media) {
-                                MediaSelectActivity.this.previewVideo(media);
+                            public void previewMedia(@NonNull Media media) {
+                                if (media instanceof Video) {
+                                    previewVideo(media);
+                                } else {
+                                    previewImage(media);
+                                }
                             }
                         };
                         binding.recyclerView.setAdapter(adapter);
@@ -261,6 +268,7 @@ public class MediaSelectActivity extends HelperActivity {
          * Need to make it visible again before the video can be prepared.
          */
         binding.videoView.setVisibility(View.VISIBLE);
+        binding.imageView.setVisibility(View.GONE);
 
         binding.videoView.setVideoURI(media.getUri());
         binding.videoView.setOnPreparedListener(mediaPlayer -> {
@@ -275,13 +283,100 @@ public class MediaSelectActivity extends HelperActivity {
          * When the video closes we need to stop the playback but also need to hide the VideoView
          * Not doing this will show a second of the previous video when launching a second one.
          */
-        binding.videoViewHolder.setOnClickListener(view -> {
+        binding.mediaViewHolder.setOnClickListener(view -> {
             binding.videoView.stopPlayback();
             binding.videoView.setVisibility(View.GONE);
-            binding.videoViewHolder.setVisibility(View.GONE);
+            binding.mediaViewHolder.setVisibility(View.GONE);
         });
 
-        binding.videoViewHolder.setVisibility(View.VISIBLE);
+        binding.mediaViewHolder.setVisibility(View.VISIBLE);
+    }
+
+    private void previewImage(Media media) {
+
+        binding.videoView.setVisibility(View.GONE);
+        binding.imageView.setVisibility(View.VISIBLE);
+
+        binding.mediaViewHolder.setOnClickListener(view -> {
+            binding.imageView.setImageURI(null);
+            binding.imageView.setVisibility(View.GONE);
+            binding.mediaViewHolder.setVisibility(View.GONE);
+        });
+
+        System.out.println("O: " + getOrientation(media.getUri()));
+
+        ViewGroup.LayoutParams layoutParams = binding.imageView.getLayoutParams();
+
+        if (getOrientation(media.getUri()) == 180) {
+
+        }
+
+        /*
+            val layoutParams = binding.videoView.layoutParams
+            val orientation = context.resources.configuration.orientation
+
+            // Landscape or Square
+            if (originalWidth >= originalHeight) {
+                if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    layoutParams.width = RelativeLayout.LayoutParams.WRAP_CONTENT
+                    layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT
+                } else {
+                    layoutParams.width = RelativeLayout.LayoutParams.MATCH_PARENT
+                    layoutParams.height = RelativeLayout.LayoutParams.WRAP_CONTENT
+                }
+            }
+            // Portrait
+            else if (originalWidth < originalHeight){
+                // Orientation doesn't matter for portrait
+                layoutParams.width = RelativeLayout.LayoutParams.WRAP_CONTENT
+                layoutParams.height = RelativeLayout.LayoutParams.MATCH_PARENT
+            }
+            binding.videoView.layoutParams = layoutParams
+         */
+
+        binding.mediaViewHolder.setVisibility(View.VISIBLE);
+
+        binding.imageView.setImageURI(media.getUri());
+    }
+
+    private int getOrientation(Uri uri) {
+
+        String[] orientationColumn = { MediaStore.Images.Media.ORIENTATION };
+        Cursor cur = getApplicationContext().getContentResolver().query(uri, orientationColumn, null, null, null);
+        int orientation = -1;
+        if (cur != null && cur.moveToFirst()) {
+            orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]));
+        }
+        return orientation;
+    }
+
+    private void previewImageOld(Media media) {
+
+        /*
+         * If the user plays more than one video, the VideoView will be hidden.
+         * Need to make it visible again before the video can be prepared.
+         */
+        binding.videoView.setVisibility(View.GONE);
+        binding.imageView.setVisibility(View.VISIBLE);
+
+        /*
+         * When the video closes we need to stop the playback but also need to hide the VideoView
+         * Not doing this will show a second of the previous video when launching a second one.
+         */
+        binding.mediaViewHolder.setOnClickListener(view -> {
+            binding.imageView.setVisibility(View.GONE);
+            binding.mediaViewHolder.setVisibility(View.GONE);
+        });
+
+        binding.mediaViewHolder.setVisibility(View.VISIBLE);
+
+        Glide.with(this)
+                .load(media.getUri())
+                .apply(RequestOptions.placeholderOf(new ColorDrawable(0xFFf2f2f2)))
+                .apply(RequestOptions.overrideOf(200, 200))
+                .apply(RequestOptions.centerCropTransform())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .into(binding.imageView);
     }
 
     @Override
