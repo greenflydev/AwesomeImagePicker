@@ -62,6 +62,60 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- When long pressing, this is the video previewer -->
+    <RelativeLayout
+        android:id="@+id/video_viewer"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000">
+
+        <FrameLayout
+            android:id="@+id/video_view_holder"
+            android:layout_margin="30dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/rounded_video"
+            android:outlineProvider="background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <VideoView
+                android:id="@+id/video_view"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
+    <!-- When long pressing, this is the image previewer -->
+    <RelativeLayout
+        android:id="@+id/image_viewer"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000">
+
+        <FrameLayout
+            android:id="@+id/image_view_holder"
+            android:layout_margin="30dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/rounded_video"
+            android:outlineProvider="background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_view"
+                android:adjustViewBounds="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
     <ProgressBar
         android:id="@+id/loader"
         style="?android:attr/progressBarStyleLarge"
