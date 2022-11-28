@@ -3,6 +3,7 @@ package in.myinnos.awesomeimagepicker.activities;
 import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
 import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
 
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -18,6 +19,7 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -286,16 +288,17 @@ public class MediaSelectActivity extends HelperActivity {
         orientationBasedUI(newConfig.orientation);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     private void showMediaPreview(int position) {
 
         Media media = mediaList.get(position);
 
         if (media instanceof Video) {
 
-            binding.videoViewer.setVisibility(View.VISIBLE);
-            binding.videoViewer.setOnClickListener(view -> dismissMediaPreview());
+            binding.videoViewHolder.setVisibility(View.VISIBLE);
+            binding.videoViewHolder.setOnClickListener(view -> dismissMediaPreview());
 
-            binding.videoViewHolder.setClipToOutline(true);
+            binding.videoViewRoundedClip.setClipToOutline(true);
 
             /*
              * If the user plays more than one video, the VideoView will be hidden.
@@ -312,14 +315,21 @@ public class MediaSelectActivity extends HelperActivity {
                 binding.videoView.start();
             });
 
-            binding.videoView.setOnClickListener(view -> {dismissMediaPreview();});
+            binding.videoView.setOnClickListener(view -> {
+                dismissMediaPreview();
+            });
+
+            binding.videoView.setOnTouchListener((view, motionEvent) -> {
+                view.performClick();
+                return true;
+            });
 
         } else {
 
-            binding.imageViewer.setVisibility(View.VISIBLE);
-            binding.imageViewer.setOnClickListener(view -> dismissMediaPreview());
+            binding.imageViewHolder.setVisibility(View.VISIBLE);
+            binding.imageViewHolder.setOnClickListener(view -> dismissMediaPreview());
 
-            binding.imageViewHolder.setClipToOutline(true);
+            binding.imageViewRoundedClip.setClipToOutline(true);
 
             Glide.with(this)
                     .load(media.getUri())
@@ -332,11 +342,11 @@ public class MediaSelectActivity extends HelperActivity {
     }
 
     private void dismissMediaPreview() {
-        binding.imageViewer.setVisibility(View.GONE);
+        binding.imageViewHolder.setVisibility(View.GONE);
         binding.imageView.setImageURI(null);
         binding.imageView.setVisibility(View.GONE);
 
-        binding.videoViewer.setVisibility(View.GONE);
+        binding.videoViewHolder.setVisibility(View.GONE);
         binding.videoView.stopPlayback();
         binding.videoView.setVisibility(View.GONE);
     }
