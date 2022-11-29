@@ -62,9 +62,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <!-- When long pressing, this is the video previewer -->
+    <!-- When long pressing, this is the image/video previewer -->
     <RelativeLayout
-        android:id="@+id/video_view_holder"
+        android:id="@+id/preview_holder"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -72,7 +72,7 @@
 
         <!-- FrameLayout is used to make a rounded edge clip around the video -->
         <FrameLayout
-            android:id="@+id/video_view_rounded_clip"
+            android:id="@+id/preview_rounded_clip"
             android:layout_margin="30dp"
             android:layout_centerInParent="true"
             android:background="@drawable/rounded_video"
@@ -85,28 +85,6 @@
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-
-        </FrameLayout>
-
-    </RelativeLayout>
-
-    <!-- When long pressing, this is the image previewer -->
-    <RelativeLayout
-        android:id="@+id/image_view_holder"
-        android:visibility="gone"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80000000">
-
-        <!-- FrameLayout is used to make a rounded edge clip around the image -->
-        <FrameLayout
-            android:id="@+id/image_view_rounded_clip"
-            android:layout_margin="30dp"
-            android:layout_centerInParent="true"
-            android:background="@drawable/rounded_video"
-            android:outlineProvider="background"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/image_view"

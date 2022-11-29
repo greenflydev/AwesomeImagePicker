@@ -288,22 +288,23 @@ public class MediaSelectActivity extends HelperActivity {
         orientationBasedUI(newConfig.orientation);
     }
 
+    /*
+     * Suppressing the complaints on the setOnTouchListener
+     * "Custom view `VideoView` has setOnTouchListener called on it but does not override performClick"
+     * This is required to be able to tap the video and dismiss it.
+     */
     @SuppressLint("ClickableViewAccessibility")
     private void showMediaPreview(int position) {
 
         Media media = mediaList.get(position);
 
+        binding.previewHolder.setVisibility(View.VISIBLE);
+        binding.previewHolder.setOnClickListener(view -> dismissMediaPreview());
+
+        binding.previewRoundedClip.setClipToOutline(true);
+
         if (media instanceof Video) {
 
-            binding.videoViewHolder.setVisibility(View.VISIBLE);
-            binding.videoViewHolder.setOnClickListener(view -> dismissMediaPreview());
-
-            binding.videoViewRoundedClip.setClipToOutline(true);
-
-            /*
-             * If the user plays more than one video, the VideoView will be hidden.
-             * Need to make it visible again before the video can be prepared.
-             */
             binding.videoView.setVisibility(View.VISIBLE);
 
             binding.videoView.setVideoURI(media.getUri());
@@ -326,11 +327,6 @@ public class MediaSelectActivity extends HelperActivity {
 
         } else {
 
-            binding.imageViewHolder.setVisibility(View.VISIBLE);
-            binding.imageViewHolder.setOnClickListener(view -> dismissMediaPreview());
-
-            binding.imageViewRoundedClip.setClipToOutline(true);
-
             Glide.with(this)
                     .load(media.getUri())
                     .apply(RequestOptions.fitCenterTransform())
@@ -342,12 +338,13 @@ public class MediaSelectActivity extends HelperActivity {
     }
 
     private void dismissMediaPreview() {
-        binding.imageViewHolder.setVisibility(View.GONE);
+        binding.previewHolder.setVisibility(View.GONE);
+
         binding.imageView.setImageURI(null);
         binding.imageView.setVisibility(View.GONE);
 
-        binding.videoViewHolder.setVisibility(View.GONE);
         binding.videoView.stopPlayback();
+        binding.videoView.setVideoURI(null);
         binding.videoView.setVisibility(View.GONE);
     }
 
@@ -590,7 +587,6 @@ public class MediaSelectActivity extends HelperActivity {
             }
 
             int itemCount = 0;
-            int pageCount = PAGE_SIZE;
 
             /*
              * Loop through one page of media items.
@@ -609,7 +605,7 @@ public class MediaSelectActivity extends HelperActivity {
                 }
 
                 // This will show thumbnails every time 50 items are loaded
-                if (cursor.isFirst() || itemCount > pageCount) {
+                if (cursor.isFirst() || itemCount > PAGE_SIZE) {
                     sendMessage(ConstantsCustomGallery.FETCH_UPDATED);
                     if (cursor.isFirst()) {
                         cursor.close();
