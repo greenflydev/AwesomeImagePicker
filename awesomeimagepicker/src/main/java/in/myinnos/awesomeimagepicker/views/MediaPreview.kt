@@ -1,13 +1,16 @@
 package `in`.myinnos.awesomeimagepicker.views
 
 import `in`.myinnos.awesomeimagepicker.databinding.MediaPreviewBinding
+import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
 import `in`.myinnos.awesomeimagepicker.models.Media
 import `in`.myinnos.awesomeimagepicker.models.Video
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.RelativeLayout
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -64,6 +67,8 @@ class MediaPreview @JvmOverloads constructor(
             binding.imageView.setOnClickListener { dismissMediaPreview() }
             binding.imageView.visibility = VISIBLE
         }
+
+        broadcastLongPressPreview()
     }
 
     private fun dismissMediaPreview() {
@@ -73,5 +78,14 @@ class MediaPreview @JvmOverloads constructor(
         binding.videoView.stopPlayback()
         binding.videoView.setVideoURI(null)
         binding.videoView.visibility = GONE
+    }
+
+    private fun broadcastLongPressPreview() {
+        /*
+         * This will broadcast out that the user long pressed to preview
+         */
+        val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+        localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_LONG_PRESS, true)
+        LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
     }
 }
