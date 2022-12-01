@@ -45,6 +45,7 @@ import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 import in.myinnos.awesomeimagepicker.models.Video;
 import in.myinnos.awesomeimagepicker.views.CustomToolbar;
+import in.myinnos.awesomeimagepicker.views.LongPressFtue;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -168,6 +169,8 @@ public class MediaSelectActivity extends HelperActivity {
          * along with the done button
          */
         displaySelectedCount();
+
+        binding.longPressFtue.checkLongPressFTUE();
     }
 
     private void displaySelectedCount() {
@@ -288,64 +291,15 @@ public class MediaSelectActivity extends HelperActivity {
         orientationBasedUI(newConfig.orientation);
     }
 
-    /*
-     * Suppressing the complaints on the setOnTouchListener
-     * "Custom view `VideoView` has setOnTouchListener called on it but does not override performClick"
-     * This is required to be able to tap the video and dismiss it.
-     */
-    @SuppressLint("ClickableViewAccessibility")
     private void showMediaPreview(int position) {
 
         Media media = mediaList.get(position);
 
-        binding.previewHolder.setVisibility(View.VISIBLE);
-        binding.previewHolder.setOnClickListener(view -> dismissMediaPreview());
-
-        binding.previewRoundedClip.setClipToOutline(true);
-
-        if (media instanceof Video) {
-
-            binding.videoView.setVisibility(View.VISIBLE);
-
-            binding.videoView.setVideoURI(media.getUri());
-            binding.videoView.setOnPreparedListener(mediaPlayer -> {
-
-                mediaPlayer.setVolume(0f, 0f);
-                mediaPlayer.setLooping(true);
-
-                binding.videoView.start();
-            });
-
-            binding.videoView.setOnClickListener(view -> {
-                dismissMediaPreview();
-            });
-
-            binding.videoView.setOnTouchListener((view, motionEvent) -> {
-                view.performClick();
-                return true;
-            });
-
-        } else {
-
-            Glide.with(this)
-                    .load(media.getUri())
-                    .apply(RequestOptions.fitCenterTransform())
-                    .into(binding.imageView);
-
-            binding.imageView.setOnClickListener(view -> dismissMediaPreview());
-            binding.imageView.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void dismissMediaPreview() {
-        binding.previewHolder.setVisibility(View.GONE);
-
-        binding.imageView.setImageURI(null);
-        binding.imageView.setVisibility(View.GONE);
-
-        binding.videoView.stopPlayback();
-        binding.videoView.setVideoURI(null);
-        binding.videoView.setVisibility(View.GONE);
+        /*
+         * This will check if the user should see the FTUE, and if they should
+         * then display it to the user.
+         */
+        binding.mediaPreview.showMediaPreview(media);
     }
 
     /*
