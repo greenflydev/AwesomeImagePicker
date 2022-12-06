@@ -3,6 +3,7 @@ package in.myinnos.awesomeimagepicker.activities;
 import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
 import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
 
+import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -12,10 +13,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ParcelFileDescriptor;
 import android.os.Process;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -23,6 +27,8 @@ import android.widget.Toast;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -33,16 +39,27 @@ import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.adapter.CustomMediaSelectAdapter;
 import in.myinnos.awesomeimagepicker.databinding.ActivityImageSelectBinding;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
+import in.myinnos.awesomeimagepicker.helpers.EndlessRecyclerGridOnScrollListener;
 import in.myinnos.awesomeimagepicker.models.Image;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 import in.myinnos.awesomeimagepicker.models.Video;
 import in.myinnos.awesomeimagepicker.views.CustomToolbar;
+import in.myinnos.awesomeimagepicker.views.LongPressFtue;
 
 /**
  * Created by MyInnos on 03-11-2016.
  */
 public class MediaSelectActivity extends HelperActivity {
+
+    private final String TAG = MediaSelectActivity.class.getSimpleName();
+
+    /*
+     * How many thumbnails to load at a time.
+     * More than 50 and it takes a little bit before any images show up.
+     * As the user scrolls more images will be loaded.
+     */
+    private static final int PAGE_SIZE = 50;
 
     private ActivityImageSelectBinding binding;
 
@@ -51,10 +68,12 @@ public class MediaSelectActivity extends HelperActivity {
     private MediaStoreType mediaStoreType;
 
     private CustomMediaSelectAdapter adapter;
+    private EndlessRecyclerGridOnScrollListener endlessScrollListener;
 
     private ContentObserver observer;
     private Handler handler;
     private Thread thread;
+    private Cursor cursor;
 
     private final String[] projectionVideos = new String[] {
             MediaStore.MediaColumns._ID,
@@ -150,6 +169,8 @@ public class MediaSelectActivity extends HelperActivity {
          * along with the done button
          */
         displaySelectedCount();
+
+        binding.longPressFtue.checkLongPressFTUE();
     }
 
     private void displaySelectedCount() {
@@ -194,12 +215,18 @@ public class MediaSelectActivity extends HelperActivity {
                     if (adapter == null) {
 
                         adapter = new CustomMediaSelectAdapter(MediaSelectActivity.this, mediaList) {
+
                             @Override
                             public void clicked(int position) {
 
                                 toggleSelection(position);
 
                                 displaySelectedCount();
+                            }
+
+                            @Override
+                            public void longClicked(int position) {
+                                showMediaPreview(position);
                             }
                         };
                         binding.recyclerView.setAdapter(adapter);
@@ -208,19 +235,6 @@ public class MediaSelectActivity extends HelperActivity {
                         binding.recyclerView.setVisibility(View.VISIBLE);
                         orientationBasedUI(getResources().getConfiguration().orientation);
                     } else {
-                        adapter.notifyDataSetChanged();
-                    }
-                    break;
-                }
-
-                case ConstantsCustomGallery.FETCH_COMPLETED: {
-                    /*
-                     * This will update the selected count
-                     */
-                    displaySelectedCount();
-
-                    // Make sure the view updates, even if there are no results
-                    if (adapter != null) {
                         adapter.notifyDataSetChanged();
                     }
                     break;
@@ -263,13 +277,29 @@ public class MediaSelectActivity extends HelperActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         mediaList = null;
+
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         orientationBasedUI(newConfig.orientation);
+    }
+
+    private void showMediaPreview(int position) {
+
+        Media media = mediaList.get(position);
+
+        /*
+         * This will check if the user should see the FTUE, and if they should
+         * then display it to the user.
+         */
+        binding.mediaPreview.showMediaPreview(media);
     }
 
     /*
@@ -348,6 +378,15 @@ public class MediaSelectActivity extends HelperActivity {
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, spanCount);
         binding.recyclerView.setLayoutManager(gridLayoutManager);
+
+        // As the user scrolls more items will be loaded
+        endlessScrollListener = new EndlessRecyclerGridOnScrollListener(gridLayoutManager) {
+            @Override
+            public void onLoadMore(int currentPage) {
+                loadMedia();
+            }
+        };
+        binding.recyclerView.addOnScrollListener(endlessScrollListener);
     }
 
     @Override
@@ -414,6 +453,9 @@ public class MediaSelectActivity extends HelperActivity {
     }
 
     private void loadMedia() {
+        /*
+         * Each page of media that is loaded will be done in a background, non-blocking, thread
+         */
         startThread(new MediaLoaderRunnable());
     }
 
@@ -421,74 +463,122 @@ public class MediaSelectActivity extends HelperActivity {
         @Override
         public void run() {
             Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-            /*
-             * If the adapter is null, this is first time this activity's view is
-             * being shown, hence send FETCH_STARTED message to show progress bar
-             * while videos are loaded from phone
-             */
-            if (adapter == null) {
-                sendMessage(ConstantsCustomGallery.FETCH_STARTED);
-            }
-
-            String selection = "";
-            List<String> selectionArgs = new ArrayList<>();
-
-            String[] projection = projectionVideos;
-            if (mediaStoreType == MediaStoreType.IMAGES) {
-                projection = projectionImages;
-            }
 
             /*
-             * Only real albums need to query by bucket id (album id)
+             * Don't try to use the cursor if it is already at the end.
+             * This can happen when the endless scroller tries to load one more page to
+             * determine there are no more pages.
              */
-            if (albumId != ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID &&
-                    albumId != ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
-                selection = MediaStore.MediaColumns.BUCKET_ID + " = ? AND ";
-                selectionArgs.add(String.valueOf(albumId));
-            }
-
-            /*
-             * Query the right kind of media, depending on mixed/photos/videos
-             */
-            switch (mediaStoreType) {
-                case MIXED:
-                    selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
-                            + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
-
-                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
-                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
-                    break;
-                case IMAGES:
-                    selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
-                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
-                    break;
-                case VIDEOS:
-                    selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
-                    selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
-                    break;
-            }
-
-            Cursor cursor = getContentResolver().query(ConstantsCustomGallery.getQueryUri(),
-                    projection, selection, selectionArgs.toArray(new String[0]), MediaStore.MediaColumns.DATE_ADDED);
-            if (cursor == null) {
-                sendMessage(ConstantsCustomGallery.ERROR);
+            if (cursor != null && cursor.isClosed()) {
                 return;
             }
 
-            int itemCount = 0;
-            int pageCount = 50;
+            /*
+             * If cursor is null then this is the first page and need to do the initial query
+             */
+            if (cursor == null) {
 
-            if (mediaList == null) {
-                mediaList = new ArrayList<>();
+                /*
+                 * If the adapter is null, this is first time this activity's view is
+                 * being shown, hence send FETCH_STARTED message to show progress bar
+                 * while videos are loaded from phone
+                 */
+                if (adapter == null) {
+                    sendMessage(ConstantsCustomGallery.FETCH_STARTED);
+                }
+
+                String selection = "";
+                List<String> selectionArgs = new ArrayList<>();
+
+                String[] projection = projectionVideos;
+                if (mediaStoreType == MediaStoreType.IMAGES) {
+                    projection = projectionImages;
+                }
+
+                /*
+                 * Only real albums need to query by bucket id (album id)
+                 */
+                if (albumId != ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID &&
+                        albumId != ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
+                    selection = MediaStore.MediaColumns.BUCKET_ID + " = ? AND ";
+                    selectionArgs.add(String.valueOf(albumId));
+                }
+
+                /*
+                 * Query the right kind of media, depending on mixed/photos/videos
+                 */
+                switch (mediaStoreType) {
+                    case MIXED:
+                        selection += "(" + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ? OR "
+                                + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?)";
+
+                        selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+                        selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+                        break;
+                    case IMAGES:
+                        selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+                        selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE));
+                        break;
+                    case VIDEOS:
+                        selection += MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+                        selectionArgs.add(String.valueOf(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO));
+                        break;
+                }
+
+                cursor = getContentResolver().query(ConstantsCustomGallery.getQueryUri(),
+                        projection, selection, selectionArgs.toArray(new String[0]), MediaStore.MediaColumns.DATE_ADDED);
+                if (cursor == null) {
+                    sendMessage(ConstantsCustomGallery.ERROR);
+                    return;
+                }
+
+                if (mediaList == null) {
+                    mediaList = new ArrayList<>();
+                }
+                mediaList.clear();
+
+                cursor.moveToLast();
             }
-            mediaList.clear();
 
-            if (cursor.moveToLast()) {
-                do {
-                    if (Thread.interrupted()) {
-                        return;
+            int itemCount = 0;
+
+            /*
+             * Loop through one page of media items.
+             * If the end is reached then close the cursor.
+             * Notify the listener that a new page was retrieved.
+             */
+            do {
+                if (Thread.interrupted()) {
+                    return;
+                }
+
+                Media media = getMediaFromCursor();
+                if (media != null) {
+                    mediaList.add(media);
+                    itemCount++;
+                }
+
+                // This will show thumbnails every time 50 items are loaded
+                if (cursor.isFirst() || itemCount > PAGE_SIZE) {
+                    sendMessage(ConstantsCustomGallery.FETCH_UPDATED);
+                    if (cursor.isFirst()) {
+                        cursor.close();
                     }
+                    return;
+                }
 
+            } while (cursor.moveToPrevious());
+
+            cursor.close();
+        }
+
+        /**
+         * Retrieves one media item from the cursor
+         * @return Media or null
+         */
+        private Media getMediaFromCursor() {
+            if (cursor != null) {
+                try {
                     long id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID));
                     String name = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME));
                     long duration = 0;
@@ -503,12 +593,9 @@ public class MediaSelectActivity extends HelperActivity {
                         uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
                     }
 
-                    try {
-                        getContentResolver().openFileDescriptor(uri, "r");
-                    } catch (Exception e) {
-                        // File doesn't actually exist
-                        continue;
-                    }
+                    // Will throw an exception if the file doesn't exist
+                    ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
+                    pfd.close();
 
                     boolean isSelected = ConstantsCustomGallery.currentlySelectedMap.containsKey(id);
 
@@ -520,7 +607,7 @@ public class MediaSelectActivity extends HelperActivity {
                         image.setMimeType(mimeType);
                         image.setUri(uri);
                         image.setSelected(isSelected);
-                        mediaList.add(image);
+                        return image;
                     } else {
                         Video video = new Video();
                         video.setId(id);
@@ -530,41 +617,14 @@ public class MediaSelectActivity extends HelperActivity {
                         video.setDuration(duration);
                         video.setUri(uri);
                         video.setSelected(isSelected);
-                        mediaList.add(video);
+                        return video;
                     }
-
-                    itemCount++;
-
-                    /*
-                     * This will show thumbnails every time 50 items are loaded
-                     */
-                    if (cursor.isFirst() || itemCount > pageCount) {
-                        sendMessage(ConstantsCustomGallery.FETCH_UPDATED);
-                        itemCount = 0;
-                    }
-
-                } while (cursor.moveToPrevious());
-            }
-            cursor.close();
-
-            /*
-             * In case this runnable is executed to onChange calling loadMedia,
-             * using countSelected variable can result in a race condition. To avoid that,
-             * tempCountSelected keeps track of number of selected videos. On handling
-             * FETCH_COMPLETED message, countSelected is assigned value of tempCountSelected.
-             */
-            int tempCountSelected = 0;
-            for (Media m : mediaList) {
-                if (ConstantsCustomGallery.currentlySelectedMap.containsKey(m.getId())) {
-                    tempCountSelected++;
-                    m.setSelected(true);
-                }
-                else if (m.isSelected()) {
-                    tempCountSelected++;
+                } catch (Exception e) {
+                    Log.e(TAG, "Error getting media item, e=" + e.getMessage(), e);
                 }
             }
 
-            sendMessage(ConstantsCustomGallery.FETCH_COMPLETED, tempCountSelected);
+            return null;
         }
     }
 
@@ -588,17 +648,12 @@ public class MediaSelectActivity extends HelperActivity {
     }
 
     private void sendMessage(int what) {
-        sendMessage(what, 0);
-    }
-
-    private void sendMessage(int what, int arg1) {
         if (handler == null) {
             return;
         }
 
         Message message = handler.obtainMessage();
         message.what = what;
-        message.arg1 = arg1;
         message.sendToTarget();
     }
 

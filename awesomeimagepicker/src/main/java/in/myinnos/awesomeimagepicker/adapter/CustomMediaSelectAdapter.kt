@@ -23,6 +23,7 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
                                         private val mediaList: List<Media>) : RecyclerView.Adapter<CustomMediaSelectAdapter.ViewHolder>() {
 
     abstract fun clicked(position: Int)
+    abstract fun longClicked(position: Int)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = GridViewMediaSelectBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -73,6 +74,13 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
         }
 
         binding.root.setOnClickListener { clicked(position) }
+
+        // Long click to see a preview of the image or video
+        binding.root.setOnLongClickListener {
+            longClicked(position)
+            // Return true or it will also trigger an on click event
+            true
+        }
 
         val uri = media.uri
 

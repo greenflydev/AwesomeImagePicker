@@ -53,10 +53,15 @@ public class ConstantsCustomGallery {
      *
      * Event type: BROADCAST_EVENT_FILTER_BY_TYPE = true
      *  - Property: INTENT_EXTRA_FILTER_BY_TYPE = the tab position for all media, photos, or videos
+     *
+     * Event type: BROADCAST_EVENT_LONG_PRESS_FTUE
+     *  - Property: None
      */
     public static final String BROADCAST_EVENT = "BROADCAST_EVENT";
     public static final String BROADCAST_EVENT_ALBUM_SELECTED = "BROADCAST_EVENT_ALBUM_SELECTED";
     public static final String BROADCAST_EVENT_FILTER_BY_TYPE = "BROADCAST_EVENT_FILTER_BY_TYPE";
+    public static final String BROADCAST_EVENT_LONG_PRESS = "BROADCAST_EVENT_LONG_PRESS";
+    public static final String BROADCAST_EVENT_LONG_PRESS_FTUE = "BROADCAST_EVENT_LONG_PRESS_FTUE";
 
     public static final String INTENT_EXTRA_ALBUM_ID = "albumId";
     public static final String INTENT_EXTRA_ALBUM = "album";
@@ -68,6 +73,7 @@ public class ConstantsCustomGallery {
 
     public static final String SP_NAME_MAIN = "SP_NAME_MAIN";
     public static final String SP_PREVIOUSLY_SELECTED_IDS = "SP_PREVIOUSLY_SELECTED_IDS";
+    public static final String SP_LONG_PRESS_FTUE_VIEWED = "SP_LONG_PRESS_FTUE_VIEWED";
 
     /*
      * Holds a list of ids that the user has already selected to upload. So if the user comes back
@@ -125,5 +131,20 @@ public class ConstantsCustomGallery {
             return sp.getStringSet(key, new HashSet<>());
         }
         return new HashSet<>();
+    }
+
+    public static void saveBooleanToMainSP(Context context, String key, boolean value) {
+        if (context != null) {
+            SharedPreferences sp = context.getSharedPreferences(SP_NAME_MAIN, 0);
+            sp.edit().putBoolean(key, value).commit();
+        }
+    }
+
+    public static boolean getBooleanFromMainSP(Context context, String key) {
+        if (context != null) {
+            SharedPreferences sp = context.getSharedPreferences(SP_NAME_MAIN, 0);
+            return sp.getBoolean(key, false);
+        }
+        return false;
     }
 }

@@ -30,6 +30,10 @@
     <string name="all_photos">All Photos</string>
     <string name="all_videos">All Videos</string>
 
+    <string name="long_press_ftue_title">Long Press to Preview</string>
+    <string name="long_press_ftue_message">Long press on an asset to preview it before selecting it to upload.</string>
+    <string name="long_press_ftue_button">Got it</string>
+
     <string name="tab_all_media">All Media</string>
     <string name="tab_photos">Photos</string>
     <string name="tab_videos">Videos</string>

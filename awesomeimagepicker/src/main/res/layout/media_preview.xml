@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- When long pressing, this is the image/video previewer -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:visibility="gone"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000">
+
+    <!-- FrameLayout is used to make a rounded edge clip around the video -->
+    <FrameLayout
+        android:id="@+id/preview_rounded_clip"
+        android:layout_margin="30dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/rounded_video"
+        android:outlineProvider="background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <VideoView
+            android:id="@+id/video_view"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:id="@+id/image_view"
+            android:adjustViewBounds="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+</RelativeLayout>
