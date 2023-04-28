@@ -29,7 +29,7 @@
     <string name="all_videos">Toutes les vidéos</string>
 
     <string name="long_press_ftue_title">Appuyez longuement pour prévisualiser</string>
-    <string name="long_press_ftue_message">Appuyez longuement sur une ressource pour la prévisualiser avant de la sélectionner pour l'importation.</string>
+    <string name="long_press_ftue_message">Appuyez longuement sur une ressource pour la prévisualiser avant de la sélectionner pour l\'importation.</string>
     <string name="long_press_ftue_button">OK</string>
 
     <string name="tab_all_media">Tous les médias</string>
