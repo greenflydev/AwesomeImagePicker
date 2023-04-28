@@ -28,6 +28,10 @@
     <string name="all_photos">Todas as fotos</string>
     <string name="all_videos">Todos os vídeos</string>
 
+    <string name="long_press_ftue_title">Pressione e segure para visualizar</string>
+    <string name="long_press_ftue_message">Pressione e segure um recurso para visualizá-lo antes de selecioná-lo para fazer o upload.</string>
+    <string name="long_press_ftue_button">Entendi</string>
+
     <string name="tab_all_media">Todas as mídias</string>
     <string name="tab_photos">Fotos</string>
     <string name="tab_videos">Vídeos</string>

@@ -28,6 +28,10 @@
     <string name="all_photos">Todas las fotos</string>
     <string name="all_videos">Todos los videos</string>
 
+    <string name="long_press_ftue_title">Mantén presionado para previsualizar</string>
+    <string name="long_press_ftue_message">Mantén presionado un archivo para previsualizarlo antes de seleccionarlo para cargar.</string>
+    <string name="long_press_ftue_button">Entendido</string>
+
     <string name="tab_all_media">Todos los archivos</string>
     <string name="tab_photos">Fotos</string>
     <string name="tab_videos">Videos</string>
