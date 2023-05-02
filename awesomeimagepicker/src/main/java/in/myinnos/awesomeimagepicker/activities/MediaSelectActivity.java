@@ -45,7 +45,6 @@ import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 import in.myinnos.awesomeimagepicker.models.Video;
 import in.myinnos.awesomeimagepicker.views.CustomToolbar;
-import in.myinnos.awesomeimagepicker.views.LongPressFtue;
 
 /**
  * Created by MyInnos on 03-11-2016.
