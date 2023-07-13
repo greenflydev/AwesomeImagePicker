@@ -1,6 +1,7 @@
 package in.myinnos.awesomeimagepicker.models;
 
 import android.net.Uri;
+import android.os.Build;
 import android.os.Parcel;
 
 /**
@@ -24,6 +25,12 @@ public class Image extends Media {
         dest.writeString(getMimeType());
         dest.writeLong(getSize());
         dest.writeString(getUri().toString());
+        /*
+         * Android 11 and up can check if the media is marked as favorite
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            dest.writeBoolean(isFavorite());
+        }
     }
 
     public static final Creator<Image> CREATOR = new Creator<Image>() {
@@ -44,5 +51,11 @@ public class Image extends Media {
         setMimeType(in.readString());
         setSize(in.readLong());
         setUri(Uri.parse(in.readString()));
+        /*
+         * Android 11 and up can check if the media is marked as favorite
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            setFavorite(in.readBoolean());
+        }
     }
 }

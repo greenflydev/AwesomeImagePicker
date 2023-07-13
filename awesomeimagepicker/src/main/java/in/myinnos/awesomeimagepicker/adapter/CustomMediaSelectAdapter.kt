@@ -51,6 +51,12 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
             binding.previouslySelected.visibility = View.GONE
         }
 
+        // Only for android 11 and up
+        binding.favorite.visibility = when (media.isFavorite) {
+            true -> View.VISIBLE
+            else -> View.GONE
+        }
+
         if (media is Video) {
 
             if (media.duration != 0L) {
@@ -61,7 +67,7 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
                 if (seconds > 59) {
                     seconds %= 60
                 }
-                val duration = String.format(Locale.getDefault(), "%d:%02d", minutes, seconds)
+                val duration = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds)
 
                 binding.videoDuration.visibility = View.VISIBLE
                 binding.videoDuration.text = duration
@@ -71,6 +77,15 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
         } else {
             binding.iconPlayView.visibility = View.GONE
             binding.videoDuration.visibility = View.GONE
+        }
+
+        /*
+         * If the favorite icon is showing, or the video duration is showing, then
+         * show the bottom black gradient.
+         */
+        binding.bottomGradient.visibility = View.GONE
+        if (binding.favorite.visibility == View.VISIBLE || binding.videoDuration.visibility == View.VISIBLE) {
+            binding.bottomGradient.visibility = View.VISIBLE
         }
 
         binding.root.setOnClickListener { clicked(position) }
