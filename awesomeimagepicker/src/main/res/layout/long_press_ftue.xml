@@ -38,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="27dp"
             android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
             android:textColor="#12263f"
             android:text="@string/long_press_ftue_title"
             android:textStyle="bold"

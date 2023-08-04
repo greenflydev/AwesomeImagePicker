@@ -14,6 +14,7 @@ public abstract class Media implements Parcelable {
     private String mimeType;
     private Uri uri;
     private boolean isSelected;
+    private boolean isFavorite;
 
     public long getId() {
         return id;
@@ -61,5 +62,13 @@ public abstract class Media implements Parcelable {
 
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
+    }
+
+    public boolean isFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        isFavorite = favorite;
     }
 }

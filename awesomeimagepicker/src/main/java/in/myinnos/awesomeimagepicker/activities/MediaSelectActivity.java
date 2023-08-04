@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,7 +46,6 @@ import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
 import in.myinnos.awesomeimagepicker.models.Video;
 import in.myinnos.awesomeimagepicker.views.CustomToolbar;
-import in.myinnos.awesomeimagepicker.views.LongPressFtue;
 
 /**
  * Created by MyInnos on 03-11-2016.
@@ -75,7 +75,7 @@ public class MediaSelectActivity extends HelperActivity {
     private Thread thread;
     private Cursor cursor;
 
-    private final String[] projectionVideos = new String[] {
+    private String[] projectionVideos = new String[] {
             MediaStore.MediaColumns._ID,
             MediaStore.MediaColumns.DISPLAY_NAME,
             MediaStore.MediaColumns.DURATION,
@@ -83,7 +83,7 @@ public class MediaSelectActivity extends HelperActivity {
             MediaStore.MediaColumns.MIME_TYPE
     };
 
-    private final String[] projectionImages = new String[] {
+    private String[] projectionImages = new String[] {
             MediaStore.MediaColumns._ID,
             MediaStore.MediaColumns.DISPLAY_NAME,
             MediaStore.MediaColumns.SIZE,
@@ -93,6 +93,29 @@ public class MediaSelectActivity extends HelperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*
+         * Android 11 and up can check if the media is marked as favorite
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+
+            projectionVideos = new String[] {
+                    MediaStore.MediaColumns._ID,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    MediaStore.MediaColumns.DURATION,
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    MediaStore.MediaColumns.IS_FAVORITE
+            };
+
+            projectionImages = new String[] {
+                    MediaStore.MediaColumns._ID,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    MediaStore.MediaColumns.SIZE,
+                    MediaStore.MediaColumns.MIME_TYPE,
+                    MediaStore.MediaColumns.IS_FAVORITE
+            };
+        }
 
         binding = ActivityImageSelectBinding.inflate(getLayoutInflater());
 
@@ -593,6 +616,15 @@ public class MediaSelectActivity extends HelperActivity {
                         uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
                     }
 
+                    boolean isFavorite = false;
+                    /*
+                     * Android 11 and up can check if the media is marked as favorite
+                     */
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        int favorite = cursor.getInt(cursor.getColumnIndex(MediaStore.MediaColumns.IS_FAVORITE));
+                        isFavorite = (favorite == 1); // 1 if the item is marked as favorite
+                    }
+
                     // Will throw an exception if the file doesn't exist
                     ParcelFileDescriptor pfd = getContentResolver().openFileDescriptor(uri, "r");
                     pfd.close();
@@ -607,6 +639,7 @@ public class MediaSelectActivity extends HelperActivity {
                         image.setMimeType(mimeType);
                         image.setUri(uri);
                         image.setSelected(isSelected);
+                        image.setFavorite(isFavorite);
                         return image;
                     } else {
                         Video video = new Video();
@@ -617,6 +650,7 @@ public class MediaSelectActivity extends HelperActivity {
                         video.setDuration(duration);
                         video.setUri(uri);
                         video.setSelected(isSelected);
+                        video.setFavorite(isFavorite);
                         return video;
                     }
                 } catch (Exception e) {
