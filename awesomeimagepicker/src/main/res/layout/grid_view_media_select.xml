@@ -67,7 +67,7 @@
     <ImageView
         android:id="@+id/selected"
         android:visibility="gone"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="top|end"
         android:background="@drawable/blue_check"
         android:layout_margin="6dp"
         android:layout_width="25dp"
