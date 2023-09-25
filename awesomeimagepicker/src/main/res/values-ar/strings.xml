@@ -1,0 +1,18 @@
+<resources>
+
+    <!--Request Permission-->
+
+    <string name="permission_ok">موافقة</string>
+    <string name="permission_settings">الإعدادات</string>
+    <string name="add">تم</string>
+    <string name="album_select_videos">مقاطع الفيديو</string>
+    <string name="album_select_photos">الصور</string>
+    <string name="album_select_media">الوسائط</string>
+    <string name="all_photos">كل الصور</string>
+    <string name="long_press_ftue_title">اضغط لفترة طويلة للمعاينة</string>
+    <string name="long_press_ftue_message">.اضغط لفترة طويلة على مادة العرض لمعاينتها قبل تحديدها للتحميل</string>
+    <string name="long_press_ftue_button">فهمت</string>
+    <string name="tab_all_media">جميع الوسائط</string>
+    <string name="tab_photos">الصور</string>
+    <string name="tab_videos">مقاطع الفيديو</string>
+</resources>
