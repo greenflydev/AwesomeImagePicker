@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app_name" translatable="false">Awesome Image Picker</string>
+
+    <!--Request Permission-->
+    <string name="permission_info">يتطلب التطبيق إذنا للتخزين لعرض الوسائط.</string>
+    <string name="permission_force">يتطلب التطبيق إذنًا للتخزين لعرض الوسائط. انقر على \"الإعدادات\" وانتقِل إلى \"الأذونات\" لمنح الإذن.</string>
+    <string name="permission_ok">موافقة</string>
+    <string name="permission_settings">الإعدادات</string>
+    <string name="permission_package">حزمة البرامج</string>
+
+    <string name="album_view">حدد الألبوم</string>
+    <string name="single_image_view">حدد %1$d صورة كحد أقصى</string>
+    <string name="single_video_view">حدد %1$d فيديو كحد أقصى</string>
+    <string name="image_view">حدد %1$d صور كحد أقصى</string>
+    <string name="video_view">حدد %1$d مقاطع فيديو كحد أقصى</string>
+    <string name="media_view">حدد %1$d من الصور ومقاطع الفيديو كحد أقصى</string>
+
+    <string name="item_selected">تم تحديد %1$d عنصر</string>
+    <string name="items_selected">تم تحديد %1$d عناصر</string>
+    <string name="image_limit_exceeded">يمكن تحديد %1$d صور كحد أقصى</string>
+    <string name="video_limit_exceeded">يمكن تحديد %1$d مقطع فيديو كحد أقصى</string>
+    <string name="media_limit_exceeded">يمكن تحديد %1$d من الصور ومقاطع الفيديو كحد أقصى</string>
+    <string name="error_null_cursor">عفوا ، حدث خطأ ما!</string>
+    <string name="add">تم</string>
+    <string name="capture_photo">التقاط الصور</string>
+    <string name="activity_media_empty">ليس لديك %1$s على جهازك لتحميلها.</string>
+    <string name="album_select_videos">مقاطع الفيديو</string>
+    <string name="album_select_photos">الصور</string>
+    <string name="album_select_media">الوسائط</string>
+    <string name="all_photos">كل الصور</string>
+    <string name="all_videos">جميع مقاطع الفيديو</string>
+
+    <string name="long_press_ftue_title">اضغط لفترة طويلة للمعاينة</string>
+    <string name="long_press_ftue_message">اضغط لفترة طويلة على مادة العرض لمعاينتها قبل تحديدها للتحميل</string>
+    <string name="long_press_ftue_button">فهمت</string>
+
+    <string name="tab_all_media">جميع الوسائط</string>
+    <string name="tab_photos">الصور</string>
+    <string name="tab_videos">مقاطع الفيديو</string>
+</resources>
