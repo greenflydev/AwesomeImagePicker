@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app_name" translatable="false">Awesome Image Picker</string>
+
+    <!--Request Permission-->
+    <string name="permission_info">アプリがメディアを表示するにはストレージへのアクセス許可が必要です。</string>
+    <string name="permission_force">アプリがメディアを表示するにはストレージへのアクセス許可が必要です。 [設定] をタップし、[アプリの権限] に移動して権限を付与します。</string>
+    <string name="permission_ok">OK</string>
+    <string name="permission_settings">設定</string>
+    <string name="permission_package">パッケージ</string>
+
+    <string name="album_view">アルバムを選択</string>
+    <string name="single_image_view">最大 %1$d枚の写真を選択</string>
+    <string name="single_video_view">最大%1$d本の動画を選択します</string>
+    <string name="image_view">最大 %1$d枚の写真を選択</string>
+    <string name="video_view">最大%1$d本の動画を選択します</string>
+    <string name="media_view">最大%1$d件の写真と動画を選択</string>
+
+    <string name="item_selected">%1$d個のアイテムが選択されました</string>
+    <string name="items_selected">%1$d個のアイテムが選択されました</string>
+    <string name="image_limit_exceeded">最大%1$d枚の写真を選択できます</string>
+    <string name="video_limit_exceeded">最大%1$d本の動画を選択できます</string>
+    <string name="media_limit_exceeded">最大%1$d枚の写真と動画を選択できます</string>
+    <string name="error_null_cursor">おや、何か問題が発生しました！</string>
+    <string name="add">完了</string>
+    <string name="capture_photo">写真をキャプチャ</string>
+    <string name="activity_media_empty">デバイスにアップロードする%1$sがありません。</string>
+    <string name="album_select_videos">動画</string>
+    <string name="album_select_photos">写真</string>
+    <string name="album_select_media">メディア</string>
+    <string name="all_photos">すべての写真</string>
+    <string name="all_videos">すべての動画</string>
+
+    <string name="long_press_ftue_title">長押ししてプレビュー</string>
+    <string name="long_press_ftue_message">アップロードするアセットを選択する前に、アセットを長押ししてプレビューします。</string>
+    <string name="long_press_ftue_button">了解しました</string>
+
+    <string name="tab_all_media">すべてのメディア</string>
+    <string name="tab_photos">写真</string>
+    <string name="tab_videos">動画</string>
+</resources>
