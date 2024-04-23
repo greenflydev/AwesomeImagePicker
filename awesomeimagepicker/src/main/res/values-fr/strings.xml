@@ -1,4 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <resources>
+    <string name="app_name" translatable="false">Awesome Image Picker</string>
+
     <!--Request Permission-->
     <string name="permission_info">L\'application nécessité une autorisation de stockage pour afficher les médias.</string>
     <string name="permission_force">L\'application nécessité une autorisation de Storage pour afficher les médias. Appuyez sur Paramètres et accédez à Autorisations pour accorder cette autorisation.</string>
