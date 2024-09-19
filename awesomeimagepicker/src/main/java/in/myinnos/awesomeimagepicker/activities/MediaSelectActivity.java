@@ -58,8 +58,9 @@ public class MediaSelectActivity extends HelperActivity {
      * How many thumbnails to load at a time.
      * More than 50 and it takes a little bit before any images show up.
      * As the user scrolls more images will be loaded.
+     * 9/13/2024 Updating to 10 to increase speed
      */
-    private static final int PAGE_SIZE = 50;
+    private static final int PAGE_SIZE = 10;
 
     private ActivityImageSelectBinding binding;
 
@@ -233,7 +234,7 @@ public class MediaSelectActivity extends HelperActivity {
 
                 case ConstantsCustomGallery.FETCH_UPDATED: {
                     /*
-                     * Every 50 items we will update the adapter.
+                     * Every 10 items we will update the adapter.
                      */
                     if (adapter == null) {
 
@@ -386,6 +387,16 @@ public class MediaSelectActivity extends HelperActivity {
         localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_FILTER_BY_TYPE, true);
         localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_FILTER_BY_TYPE, position);
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent);
+
+        /*
+         * When changing tabs we need to null out the cursor and the adapter.
+         * Then it will make a new cursor for the query and a new adapter.
+         */
+        if (cursor != null) {
+            cursor.close();
+            cursor = null;
+        }
+        adapter = null;
 
         loadMedia();
     }
@@ -577,11 +588,14 @@ public class MediaSelectActivity extends HelperActivity {
 
                 Media media = getMediaFromCursor();
                 if (media != null) {
+                    System.out.println("Media: " + media.getId());
                     mediaList.add(media);
                     itemCount++;
+                } else {
+                    System.out.println("Media is null");
                 }
 
-                // This will show thumbnails every time 50 items are loaded
+                // This will show thumbnails every time 10 items are loaded
                 if (cursor.isFirst() || itemCount > PAGE_SIZE) {
                     sendMessage(ConstantsCustomGallery.FETCH_UPDATED);
                     if (cursor.isFirst()) {
