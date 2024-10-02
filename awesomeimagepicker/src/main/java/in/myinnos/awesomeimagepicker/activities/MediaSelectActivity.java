@@ -3,7 +3,6 @@ package in.myinnos.awesomeimagepicker.activities;
 import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_in;
 import static in.myinnos.awesomeimagepicker.R.anim.abc_fade_out;
 
-import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -20,17 +19,12 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.GridLayoutManager;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,9 +52,8 @@ public class MediaSelectActivity extends HelperActivity {
      * How many thumbnails to load at a time.
      * More than 50 and it takes a little bit before any images show up.
      * As the user scrolls more images will be loaded.
-     * 9/13/2024 Updating to 10 to increase speed
      */
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 50;
 
     private ActivityImageSelectBinding binding;
 
@@ -234,7 +227,7 @@ public class MediaSelectActivity extends HelperActivity {
 
                 case ConstantsCustomGallery.FETCH_UPDATED: {
                     /*
-                     * Every 10 items we will update the adapter.
+                     * Every 50 items we will update the adapter.
                      */
                     if (adapter == null) {
 
@@ -332,34 +325,38 @@ public class MediaSelectActivity extends HelperActivity {
      */
     private void setupTabLayout() {
 
-        if (mediaStoreType == MediaStoreType.MIXED) {
+        /*
+         * No filtering by media until the issue with crashes is fixed
+         */
 
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all_media)));
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_photos)));
-            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_videos)));
-            binding.tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-            binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    if (tab != null) {
-                        tabSelected(tab.getPosition());
-                    }
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-
-                }
-            });
-        } else {
+//        if (mediaStoreType == MediaStoreType.MIXED) {
+//
+//            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all_media)));
+//            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_photos)));
+//            binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_videos)));
+//            binding.tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+//
+//            binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//                @Override
+//                public void onTabSelected(TabLayout.Tab tab) {
+//                    if (tab != null) {
+//                        tabSelected(tab.getPosition());
+//                    }
+//                }
+//
+//                @Override
+//                public void onTabUnselected(TabLayout.Tab tab) {
+//
+//                }
+//
+//                @Override
+//                public void onTabReselected(TabLayout.Tab tab) {
+//
+//                }
+//            });
+//        } else {
             binding.tabLayout.setVisibility(View.GONE);
-        }
+//        }
     }
 
     /*
@@ -588,14 +585,11 @@ public class MediaSelectActivity extends HelperActivity {
 
                 Media media = getMediaFromCursor();
                 if (media != null) {
-                    System.out.println("Media: " + media.getId());
                     mediaList.add(media);
                     itemCount++;
-                } else {
-                    System.out.println("Media is null");
                 }
 
-                // This will show thumbnails every time 10 items are loaded
+                // This will show thumbnails every time 50 items are loaded
                 if (cursor.isFirst() || itemCount > PAGE_SIZE) {
                     sendMessage(ConstantsCustomGallery.FETCH_UPDATED);
                     if (cursor.isFirst()) {
