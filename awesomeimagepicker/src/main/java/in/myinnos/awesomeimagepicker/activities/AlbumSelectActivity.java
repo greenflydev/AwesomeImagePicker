@@ -32,6 +32,7 @@ import in.myinnos.awesomeimagepicker.R;
 import in.myinnos.awesomeimagepicker.adapter.AlbumSelectAdapter;
 import in.myinnos.awesomeimagepicker.databinding.ActivityAlbumSelectBinding;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
+import in.myinnos.awesomeimagepicker.helpers.GalleryUtil;
 import in.myinnos.awesomeimagepicker.models.Album;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
@@ -164,95 +165,95 @@ public class AlbumSelectActivity extends HelperActivity {
     protected void onStart() {
         super.onStart();
 
-        handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                switch (msg.what) {
-                    case ConstantsCustomGallery.PERMISSION_GRANTED: {
-                        loadAlbums();
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.FETCH_STARTED: {
-                        binding.loader.setVisibility(View.VISIBLE);
-                        binding.recyclerView.setVisibility(View.INVISIBLE);
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.FETCH_UPDATED: {
-                        if (adapter == null) {
-
-                            adapter = new AlbumSelectAdapter(AlbumSelectActivity.this, albums) {
-                                @Override
-                                public void clicked(int position, Album album) {
-
-                                    /*
-                                     * This will broadcast out that the user selected an album.
-                                     * Used for tracking in the calling application.
-                                     */
-                                    Intent localIntent = new Intent(ConstantsCustomGallery.BROADCAST_EVENT);
-                                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_ALBUM_SELECTED, true);
-                                    localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
-                                    LocalBroadcastManager.getInstance(AlbumSelectActivity.this).sendBroadcast(localIntent);
-
-                                    Intent intent = new Intent(getApplicationContext(), MediaSelectActivity.class);
-                                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM, album.getName());
-                                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
-                                    startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
-                                }
-                            };
-
-                            binding.recyclerView.setAdapter(adapter);
-
-                            binding.loader.setVisibility(View.GONE);
-                            binding.recyclerView.setVisibility(View.VISIBLE);
-
-                        } else {
-                            adapter.notifyDataSetChanged();
-                        }
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.ERROR: {
-                        binding.loader.setVisibility(View.GONE);
-                        binding.errorDisplay.setVisibility(View.VISIBLE);
-                        break;
-                    }
-
-                    case ConstantsCustomGallery.EMPTY_LIST: {
-                        binding.loader.setVisibility(View.GONE);
-                        binding.emptyView.setVisibility(View.VISIBLE);
-                    }
-                }
-                return true;
-            }
-        });
-        observer = new ContentObserver(handler) {
-            @Override
-            public void onChange(boolean selfChange, Uri uri) {
-                loadAlbums();
-            }
-        };
-
-        getContentResolver().registerContentObserver(ConstantsCustomGallery.getQueryUri(), false, observer);
+//        handler = new Handler(new Handler.Callback() {
+//            @Override
+//            public boolean handleMessage(Message msg) {
+//                switch (msg.what) {
+//                    case ConstantsCustomGallery.PERMISSION_GRANTED: {
+//                        loadAlbums();
+//                        break;
+//                    }
+//
+//                    case ConstantsCustomGallery.FETCH_STARTED: {
+//                        binding.loader.setVisibility(View.VISIBLE);
+//                        binding.recyclerView.setVisibility(View.INVISIBLE);
+//                        break;
+//                    }
+//
+//                    case ConstantsCustomGallery.FETCH_UPDATED: {
+//                        if (adapter == null) {
+//
+//                            adapter = new AlbumSelectAdapter(AlbumSelectActivity.this, albums) {
+//                                @Override
+//                                public void clicked(int position, Album album) {
+//
+//                                    /*
+//                                     * This will broadcast out that the user selected an album.
+//                                     * Used for tracking in the calling application.
+//                                     */
+//                                    Intent localIntent = new Intent(ConstantsCustomGallery.BROADCAST_EVENT);
+//                                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_ALBUM_SELECTED, true);
+//                                    localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
+//                                    LocalBroadcastManager.getInstance(AlbumSelectActivity.this).sendBroadcast(localIntent);
+//
+//                                    Intent intent = new Intent(getApplicationContext(), MediaSelectActivity.class);
+//                                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM, album.getName());
+//                                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.getId());
+//                                    startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
+//                                }
+//                            };
+//
+//                            binding.recyclerView.setAdapter(adapter);
+//
+//                            binding.loader.setVisibility(View.GONE);
+//                            binding.recyclerView.setVisibility(View.VISIBLE);
+//
+//                        } else {
+//                            adapter.notifyDataSetChanged();
+//                        }
+//                        break;
+//                    }
+//
+//                    case ConstantsCustomGallery.ERROR: {
+//                        binding.loader.setVisibility(View.GONE);
+//                        binding.errorDisplay.setVisibility(View.VISIBLE);
+//                        break;
+//                    }
+//
+//                    case ConstantsCustomGallery.EMPTY_LIST: {
+//                        binding.loader.setVisibility(View.GONE);
+//                        binding.emptyView.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//                return true;
+//            }
+//        });
+//        observer = new ContentObserver(handler) {
+//            @Override
+//            public void onChange(boolean selfChange, Uri uri) {
+//                loadAlbums();
+//            }
+//        };
+//
+//        getContentResolver().registerContentObserver(ConstantsCustomGallery.getQueryUri(), false, observer);
 
         checkPermission();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        stopThread();
-
-        getContentResolver().unregisterContentObserver(observer);
-        observer = null;
-
-        if (handler != null) {
-            handler.removeCallbacksAndMessages(null);
-            handler = null;
-        }
-    }
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//
+//        stopThread();
+//
+//        getContentResolver().unregisterContentObserver(observer);
+//        observer = null;
+//
+//        if (handler != null) {
+//            handler.removeCallbacksAndMessages(null);
+//            handler = null;
+//        }
+//    }
 
     @Override
     protected void onDestroy() {
@@ -315,7 +316,17 @@ public class AlbumSelectActivity extends HelperActivity {
     }
 
     private void loadAlbums() {
-        startThread(new AlbumLoaderRunnable());
+//        startThread(new AlbumLoaderRunnable());
+
+//        sendMessage(ConstantsCustomGallery.FETCH_STARTED);
+
+        GalleryUtil.Companion.getMediaFromJava(this, MediaStoreType.MIXED, albums -> {
+            System.out.println("CAM DEBUG Albums: " + albums.size());
+            AlbumSelectActivity.this.albums.clear();
+            AlbumSelectActivity.this.albums.addAll(albums);
+//            sendMessage(ConstantsCustomGallery.FETCH_UPDATED);
+            return null;
+        });
     }
 
     private class AlbumLoaderRunnable implements Runnable {

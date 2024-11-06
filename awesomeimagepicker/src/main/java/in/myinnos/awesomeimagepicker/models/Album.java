@@ -2,13 +2,17 @@ package in.myinnos.awesomeimagepicker.models;
 
 import android.net.Uri;
 
+import java.util.List;
+
 /**
  * Created by MyInnos on 03-11-2016.
  */
+
 public class Album {
     private long id;
     private String name;
     private Uri uri;
+    private List<Media> mediaList;
     private int count;
 
     public Album() { }
@@ -17,6 +21,13 @@ public class Album {
         this.id = id;
         this.name = name;
         this.uri = uri;
+    }
+
+    public Album(long id, String name, Uri uri, List<Media> mediaList) {
+        this.id = id;
+        this.name = name;
+        this.uri = uri;
+        this.mediaList = mediaList;
     }
 
     public String getName() {
@@ -44,10 +55,21 @@ public class Album {
     }
 
     public int getCount() {
-        return count;
+        if (mediaList != null) {
+            return mediaList.size();
+        }
+        return 0;
     }
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public List<Media> getMediaList() {
+        return mediaList;
+    }
+
+    public void setMediaList(List<Media> mediaList) {
+        this.mediaList = mediaList;
     }
 }

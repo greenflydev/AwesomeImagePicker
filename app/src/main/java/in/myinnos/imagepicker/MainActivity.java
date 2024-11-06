@@ -1,5 +1,7 @@
 package in.myinnos.imagepicker;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -20,12 +22,10 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 
-import in.myinnos.awesomeimagepicker.activities.AlbumSelectActivity;
+import in.myinnos.awesomeimagepicker.activities.AlbumActivity;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Media;
 import in.myinnos.awesomeimagepicker.models.MediaStoreType;
-
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -77,13 +77,13 @@ public class MainActivity extends AppCompatActivity {
                 Helper.requestStoragePermission(MainActivity.this, READ_STORAGE_PERMISSION);
             } else {
                 // opining custom gallery
-                Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
+                Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
                 intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LIMIT, LIMIT);
                 intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIASTORETYPE, type);
                 startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
             }
         } else {
-            Intent intent = new Intent(MainActivity.this, AlbumSelectActivity.class);
+            Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
             intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LIMIT, LIMIT);
             intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIASTORETYPE, type);
             startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);

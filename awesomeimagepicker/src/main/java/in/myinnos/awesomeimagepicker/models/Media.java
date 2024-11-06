@@ -15,6 +15,9 @@ public abstract class Media implements Parcelable {
     private Uri uri;
     private boolean isSelected;
     private boolean isFavorite;
+    private long albumId;
+    private String albumName;
+    private long dateAddedSecond;
 
     public long getId() {
         return id;
@@ -70,5 +73,29 @@ public abstract class Media implements Parcelable {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public long getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(long albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public long getDateAddedSecond() {
+        return dateAddedSecond;
+    }
+
+    public void setDateAddedSecond(long dateAddedSecond) {
+        this.dateAddedSecond = dateAddedSecond;
     }
 }
