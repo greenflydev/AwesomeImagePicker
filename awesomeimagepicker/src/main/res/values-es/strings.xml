@@ -28,8 +28,8 @@
     <string name="album_select_videos">videos</string>
     <string name="album_select_photos">fotos</string>
     <string name="album_select_media">archivos</string>
-
     <string name="all_media">Todos los archivos</string>
+
     <string name="long_press_ftue_title">Mantén presionado para previsualizar</string>
     <string name="long_press_ftue_message">Mantén presionado un archivo para previsualizarlo antes de seleccionarlo para cargar.</string>
     <string name="long_press_ftue_button">Entendido</string>

@@ -28,8 +28,8 @@
     <string name="album_select_videos">مقاطع الفيديو</string>
     <string name="album_select_photos">الصور</string>
     <string name="album_select_media">الوسائط</string>
-
     <string name="all_media">جميع الوسائط</string>
+
     <string name="long_press_ftue_title">اضغط لفترة طويلة للمعاينة</string>
     <string name="long_press_ftue_message">اضغط لفترة طويلة على مادة العرض لمعاينتها قبل تحديدها للتحميل</string>
     <string name="long_press_ftue_button">فهمت</string>
