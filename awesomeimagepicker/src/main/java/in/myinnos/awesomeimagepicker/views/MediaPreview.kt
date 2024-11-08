@@ -44,7 +44,7 @@ class MediaPreview @JvmOverloads constructor(
 
             binding.videoView.visibility = VISIBLE
 
-            binding.videoView.setVideoURI(media.getUri())
+            binding.videoView.setVideoURI(media.uri)
             binding.videoView.setOnPreparedListener { mediaPlayer ->
                 mediaPlayer.setVolume(0f, 0f)
                 mediaPlayer.isLooping = true

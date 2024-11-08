@@ -1,29 +1,40 @@
 package `in`.myinnos.awesomeimagepicker.adapter
 
-import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.databinding.GridViewMediaSelectBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
-import `in`.myinnos.awesomeimagepicker.models.Media
 import `in`.myinnos.awesomeimagepicker.models.Video
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import `in`.myinnos.awesomeimagepicker.models.Album
+import `in`.myinnos.awesomeimagepicker.models.Image
+import `in`.myinnos.awesomeimagepicker.models.MediaType
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-abstract class CustomMediaSelectAdapter(private val context: Context,
-                                        private val mediaList: List<Media>) : RecyclerView.Adapter<CustomMediaSelectAdapter.ViewHolder>() {
+abstract class MediaSelectAdapter(private val context: Context,
+                                  private val album: Album) : RecyclerView.Adapter<MediaSelectAdapter.ViewHolder>() {
 
     abstract fun clicked(position: Int)
     abstract fun longClicked(position: Int)
+
+    private var filteredMediaList = album.mediaList
+
+    fun filterMedia() {
+        filteredMediaList = when (ConstantsCustomGallery.mediaType) {
+            MediaType.IMAGES -> album.mediaList.filter { it is Image }
+            MediaType.VIDEOS -> album.mediaList.filter { it is Video }
+            else -> album.mediaList
+        }
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = GridViewMediaSelectBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -34,7 +45,7 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
 
         val binding = holder.binding
 
-        val media = mediaList[position]
+        val media = filteredMediaList[position]
 
         if (media.isSelected) {
             binding.viewAlpha.visibility = View.VISIBLE
@@ -109,7 +120,7 @@ abstract class CustomMediaSelectAdapter(private val context: Context,
     }
 
     override fun getItemCount(): Int {
-        return mediaList.size
+        return filteredMediaList.size
     }
 
     class ViewHolder internal constructor(var binding: GridViewMediaSelectBinding) : RecyclerView.ViewHolder(binding.root)

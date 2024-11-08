@@ -27,8 +27,7 @@
     <string name="album_select_videos">videos</string>
     <string name="album_select_photos">photos</string>
     <string name="album_select_media">media</string>
-    <string name="all_photos">All Photos</string>
-    <string name="all_videos">All Videos</string>
+    <string name="all_media">All Media</string>
 
     <string name="long_press_ftue_title">Long Press to Preview</string>
     <string name="long_press_ftue_message">Long press on an asset to preview it before selecting it to upload.</string>

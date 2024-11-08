@@ -15,11 +15,11 @@
         android:supportsRtl="true">
 
         <activity
-            android:name=".activities.AlbumSelectActivity"
+            android:name=".activities.AlbumActivity"
             android:screenOrientation="portrait"
             android:hardwareAccelerated="true" />
         <activity
-            android:name=".activities.MediaSelectActivity"
+            android:name=".activities.MediaActivity"
             android:screenOrientation="portrait"
             android:hardwareAccelerated="true" />
 
