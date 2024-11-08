@@ -28,8 +28,8 @@
     <string name="album_select_videos">vidéos</string>
     <string name="album_select_photos">photos</string>
     <string name="album_select_media">médias</string>
-
     <string name="all_media">Tous les médias</string>
+
     <string name="long_press_ftue_title">Appuyez longuement pour prévisualiser</string>
     <string name="long_press_ftue_message">Appuyez longuement sur une ressource pour la prévisualiser avant de la sélectionner pour l\'importation.</string>
     <string name="long_press_ftue_button">OK</string>
