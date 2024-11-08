@@ -2,8 +2,6 @@ package in.myinnos.awesomeimagepicker.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.Uri;
-import android.provider.MediaStore;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,29 +9,18 @@ import java.util.Map;
 import java.util.Set;
 
 import in.myinnos.awesomeimagepicker.models.Media;
-import in.myinnos.awesomeimagepicker.models.MediaStoreType;
+import in.myinnos.awesomeimagepicker.models.MediaType;
 
 /**
  * Created by MyInnos on 03-11-2016.
  */
 public class ConstantsCustomGallery {
     public static final int PERMISSION_REQUEST_CODE = 1000;
-    public static final int PERMISSION_GRANTED = 1001;
-    public static final int PERMISSION_DENIED = 1002;
-
-    public static final int REQUEST_CODE = 2000;
-
-    public static final int FETCH_STARTED = 2001;
-    public static final int FETCH_COMPLETED = 2002;
-    public static final int FETCH_UPDATED = 2003;
-    public static final int ERROR = 2005;
-    public static final int EMPTY_LIST = 2006;
 
     /*
      * Fake albums for showing all photos or all videos.
      */
-    public static final long ALL_PHOTOS_ALBUM_ID = -1001;
-    public static final long ALL_VIDEOS_ALBUM_ID = -1002;
+    public static final long ALL_MEDIA_ALBUM_ID = -1001;
 
     /*
      * When looking at mixed media, at the top will be tabs to select just
@@ -64,10 +51,9 @@ public class ConstantsCustomGallery {
     public static final String BROADCAST_EVENT_LONG_PRESS_FTUE = "BROADCAST_EVENT_LONG_PRESS_FTUE";
 
     public static final String INTENT_EXTRA_ALBUM_ID = "albumId";
-    public static final String INTENT_EXTRA_ALBUM = "album";
     public static final String INTENT_EXTRA_MEDIA = "media";
     public static final String INTENT_EXTRA_LIMIT = "limit";
-    public static final String INTENT_EXTRA_MEDIASTORETYPE = "mediaStoreType";
+    public static final String INTENT_EXTRA_MEDIATYPE = "mediaType";
     public static final String INTENT_EXTRA_FILTER_BY_TYPE = "filterByType";
     public static final int DEFAULT_LIMIT = 10;
 
@@ -89,11 +75,7 @@ public class ConstantsCustomGallery {
     public static int limit = DEFAULT_LIMIT;
 
     //Type of media
-    public static MediaStoreType mediaStoreType;
-
-    public static Uri getQueryUri() {
-        return MediaStore.Files.getContentUri("external"); // API 29 : MediaStore.VOLUME_EXTERNAL
-    }
+    public static MediaType mediaType;
 
     /*
      * This will load the saved previously selected ids from shared preferences.

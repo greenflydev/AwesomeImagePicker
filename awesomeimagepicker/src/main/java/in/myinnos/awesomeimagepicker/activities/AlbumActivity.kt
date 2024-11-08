@@ -17,8 +17,7 @@ import `in`.myinnos.awesomeimagepicker.databinding.ActivityAlbumSelectBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
 import `in`.myinnos.awesomeimagepicker.helpers.GalleryUtil
 import `in`.myinnos.awesomeimagepicker.models.Album
-import `in`.myinnos.awesomeimagepicker.models.Media
-import `in`.myinnos.awesomeimagepicker.models.MediaStoreType
+import `in`.myinnos.awesomeimagepicker.models.MediaType
 import `in`.myinnos.awesomeimagepicker.views.CustomToolbar
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +25,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class AlbumActivity : HelperActivity() {
-
-    companion object {
-        val albums = mutableListOf<Album>()
-    }
 
     private lateinit var binding: ActivityAlbumSelectBinding
 
@@ -42,7 +37,8 @@ class AlbumActivity : HelperActivity() {
 
         binding = ActivityAlbumSelectBinding.inflate(layoutInflater)
 
-        setContentView(binding.getRoot())
+        setContentView(binding.root)
+        setSnackbarView(binding.root) // For handling permissions
 
         val intent = intent
         if (intent == null) {
@@ -62,11 +58,11 @@ class AlbumActivity : HelperActivity() {
             ConstantsCustomGallery.DEFAULT_LIMIT
         )
 
-        ConstantsCustomGallery.mediaStoreType = MediaStoreType.MIXED
-        if (intent.hasExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIASTORETYPE)) {
-            val mediaStoreType: MediaStoreType? = intent.getSerializableExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIASTORETYPE) as MediaStoreType?
-            if (mediaStoreType != null) {
-                ConstantsCustomGallery.mediaStoreType = mediaStoreType
+        ConstantsCustomGallery.mediaType = MediaType.MIXED
+        if (intent.hasExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIATYPE)) {
+            val mediaType: MediaType? = intent.getSerializableExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIATYPE) as MediaType?
+            if (mediaType != null) {
+                ConstantsCustomGallery.mediaType = mediaType
             }
         }
 
@@ -97,6 +93,30 @@ class AlbumActivity : HelperActivity() {
          */
         ConstantsCustomGallery.currentlySelectedMap.clear()
 
+        adapter = object: AlbumSelectAdapter(this@AlbumActivity) {
+
+            override fun clicked(position: Int, album: Album) {
+
+                /*
+                 * This will broadcast out that the user selected an album.
+                 * Used for tracking in the calling application.
+                 */
+                val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_ALBUM_SELECTED, true)
+                localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.id)
+                LocalBroadcastManager.getInstance(this@AlbumActivity).sendBroadcast(localIntent)
+
+                val intent = Intent(applicationContext, MediaActivity::class.java)
+                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.id)
+                mediaSelectResult.launch(intent)
+            }
+        }
+        binding.recyclerView.setAdapter(adapter);
+
+        checkPermission()
+    }
+
+    override fun permissionGranted() {
         loadAlbums()
     }
 
@@ -113,35 +133,26 @@ class AlbumActivity : HelperActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     private fun loadAlbums() {
 
+        binding.loader.visibility = View.VISIBLE
+        binding.errorDisplay.visibility = View.GONE
+        binding.recyclerView.visibility = View.GONE
+
         GlobalScope.launch(Dispatchers.Main) {
 
-            albums.clear()
-            albums.addAll(GalleryUtil.getMedia(this@AlbumActivity, ConstantsCustomGallery.mediaStoreType))
+            val success = GalleryUtil.loadMedia(this@AlbumActivity, ConstantsCustomGallery.mediaType)
 
-            adapter = object: AlbumSelectAdapter(this@AlbumActivity, albums) {
-
-                override fun clicked(position: Int, album: Album) {
-
-                    /*
-                     * This will broadcast out that the user selected an album.
-                     * Used for tracking in the calling application.
-                     */
-                    val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
-                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_ALBUM_SELECTED, true)
-                    localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.id)
-                    LocalBroadcastManager.getInstance(this@AlbumActivity).sendBroadcast(localIntent)
-
-                    val intent = Intent(applicationContext, MediaActivity::class.java)
-                    intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, album.id)
-//                    startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE)
-                    mediaSelectResult.launch(intent)
+            when (success) {
+                true -> {
+                    binding.loader.visibility = View.GONE
+                    binding.errorDisplay.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
+                }
+                false -> {
+                    binding.loader.visibility = View.GONE
+                    binding.errorDisplay.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.GONE
                 }
             }
-
-            binding.recyclerView.setAdapter(adapter);
-
-            binding.loader.setVisibility(View.GONE);
-            binding.recyclerView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -164,9 +175,9 @@ class AlbumActivity : HelperActivity() {
     private fun setMessageDisplays() {
         binding.errorDisplay.visibility = View.INVISIBLE
 
-        val mediaTypeName = if (ConstantsCustomGallery.mediaStoreType == MediaStoreType.VIDEOS) {
+        val mediaTypeName = if (ConstantsCustomGallery.mediaType == MediaType.VIDEOS) {
             getString(R.string.album_select_videos)
-        } else if (ConstantsCustomGallery.mediaStoreType == MediaStoreType.IMAGES) {
+        } else if (ConstantsCustomGallery.mediaType == MediaType.IMAGES) {
             getString(R.string.album_select_photos)
         } else {
             getString(R.string.album_select_media)
@@ -174,22 +185,4 @@ class AlbumActivity : HelperActivity() {
 
         binding.emptyView.text = getString(R.string.activity_media_empty, mediaTypeName)
     }
-
-    private fun sendIntent() {
-
-        ConstantsCustomGallery.getPreviouslySelectedIds(this).addAll(ConstantsCustomGallery.currentlySelectedMap.keys)
-        ConstantsCustomGallery.savePreviouslySelectedIds(this)
-
-        val selectedVideos = ArrayList<Media>()
-        for ((_, value) in ConstantsCustomGallery.currentlySelectedMap) {
-            selectedVideos.add(value)
-        }
-
-        val intent = Intent()
-        intent.putParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA, selectedVideos)
-        setResult(RESULT_OK, intent)
-        finish()
-        overridePendingTransition(abc_fade_in, abc_fade_out)
-    }
-
 }

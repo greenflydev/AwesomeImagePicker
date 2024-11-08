@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.view.WindowManager
@@ -17,12 +18,15 @@ import `in`.myinnos.awesomeimagepicker.R.anim.abc_fade_out
 import `in`.myinnos.awesomeimagepicker.adapter.MediaSelectAdapter
 import `in`.myinnos.awesomeimagepicker.databinding.ActivityImageSelectBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
+import `in`.myinnos.awesomeimagepicker.helpers.GalleryUtil
 import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.Media
-import `in`.myinnos.awesomeimagepicker.models.MediaStoreType
+import `in`.myinnos.awesomeimagepicker.models.MediaType
 import `in`.myinnos.awesomeimagepicker.views.CustomToolbar
 
 class MediaActivity : HelperActivity() {
+
+    private val TAG = MediaActivity::class.java.simpleName
 
     private lateinit var binding: ActivityImageSelectBinding
 
@@ -42,11 +46,11 @@ class MediaActivity : HelperActivity() {
             finish()
         }
         val albumId = intent.getLongExtra(ConstantsCustomGallery.INTENT_EXTRA_ALBUM_ID, 0)
-        AlbumActivity.albums.find { it.id == albumId }?.let {
+        GalleryUtil.albums.find { it.id == albumId }?.let {
             album = it
         }
         if (!::album.isInitialized) {
-            println("NO ALBUM")
+            Log.e(TAG, "Error no album found for $albumId")
             finish()
             return
         }
@@ -54,7 +58,7 @@ class MediaActivity : HelperActivity() {
         /*
          * This is the media type that comes from GF. Can be mixed, photos, or videos.
          *
-         * We are storing it locally here because the user might have pickd all photos or all videos.
+         * We are storing it locally here because the user might have picked all photos or all videos.
          * We don't want to overwrite the global type of media, such as mixed.
          *
          * Example:
@@ -62,28 +66,17 @@ class MediaActivity : HelperActivity() {
          * In the album list the user picked : All Photos
          * In this media list we only need to show mediaStoreType = MediaStoreType.IMAGES
          */
-        val mediaStoreType = ConstantsCustomGallery.mediaStoreType
-
-
-        /*
-         * This happens if the user picks to see All Photos or All Videos.
-         * We will switch the mediaStore type to just photos or videos.
-         */
-//        if (albumId == ConstantsCustomGallery.ALL_PHOTOS_ALBUM_ID) {
-//            mediaStoreType = MediaStoreType.IMAGES
-//        } else if (albumId == ConstantsCustomGallery.ALL_VIDEOS_ALBUM_ID) {
-//            mediaStoreType = MediaStoreType.VIDEOS
-//        }
+        val mediaStoreType = ConstantsCustomGallery.mediaType
 
         var titleId = R.string.media_view
         when (mediaStoreType) {
-            MediaStoreType.VIDEOS -> titleId = if (ConstantsCustomGallery.limit == 1) {
+            MediaType.VIDEOS -> titleId = if (ConstantsCustomGallery.limit == 1) {
                 R.string.single_video_view
             } else {
                 R.string.video_view
             }
 
-            MediaStoreType.IMAGES -> titleId = if (ConstantsCustomGallery.limit == 1) {
+            MediaType.IMAGES -> titleId = if (ConstantsCustomGallery.limit == 1) {
                 R.string.single_image_view
             } else {
                 R.string.image_view
@@ -92,8 +85,6 @@ class MediaActivity : HelperActivity() {
             else -> {}
         }
         binding.toolbar.setTitle(getString(titleId, ConstantsCustomGallery.limit))
-
-        binding.errorDisplay.visibility = View.INVISIBLE
 
         binding.toolbar.setCallback(object : CustomToolbar.Callback {
             override fun onBack() {
@@ -116,7 +107,7 @@ class MediaActivity : HelperActivity() {
 
         binding.longPressFtue.checkLongPressFTUE()
 
-        adapter = object : MediaSelectAdapter(this@MediaActivity, album.mediaList) {
+        adapter = object : MediaSelectAdapter(this@MediaActivity, album) {
             override fun clicked(position: Int) {
                 toggleSelection(position)
 
@@ -129,8 +120,16 @@ class MediaActivity : HelperActivity() {
         }
         binding.recyclerView.adapter = adapter
 
-        binding.loader.visibility = View.GONE
-        binding.recyclerView.visibility = View.VISIBLE
+        when (album.mediaList.size) {
+            0 -> {
+                binding.emptyView.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+            }
+            else -> {
+                binding.emptyView.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+            }
+        }
         orientationBasedUI(resources.configuration.orientation)
     }
 
@@ -145,14 +144,6 @@ class MediaActivity : HelperActivity() {
 
         val gridLayoutManager = GridLayoutManager(this, spanCount)
         binding.recyclerView.layoutManager = gridLayoutManager
-
-        // As the user scrolls more items will be loaded
-//        endlessScrollListener = object : EndlessRecyclerGridOnScrollListener(gridLayoutManager) {
-//            override fun onLoadMore(currentPage: Int) {
-//                loadMedia()
-//            }
-//        }
-//        binding.recyclerView.addOnScrollListener(endlessScrollListener)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -173,13 +164,15 @@ class MediaActivity : HelperActivity() {
     }
 
     private fun showMediaPreview(position: Int) {
-        val media: Media = album.mediaList[position]
+        album.mediaList?.let { mediaList ->
+            val media: Media = mediaList[position]
 
-        /*
-         * This will check if the user should see the FTUE, and if they should
-         * then display it to the user.
-         */
-        binding.mediaPreview.showMediaPreview(media)
+            /*
+             * This will check if the user should see the FTUE, and if they should
+             * then display it to the user.
+             */
+            binding.mediaPreview.showMediaPreview(media)
+        }
     }
 
     private fun displaySelectedCount() {
@@ -204,9 +197,9 @@ class MediaActivity : HelperActivity() {
      */
     private fun setupTabLayout() {
 
-        val mediaStoreType = ConstantsCustomGallery.mediaStoreType
+        val mediaStoreType = ConstantsCustomGallery.mediaType
 
-        if (mediaStoreType == MediaStoreType.MIXED) {
+        if (mediaStoreType == MediaType.MIXED) {
 
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all_media)));
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_photos)));
@@ -238,10 +231,10 @@ class MediaActivity : HelperActivity() {
      */
     private fun tabSelected(position: Int) {
 
-        ConstantsCustomGallery.mediaStoreType = when (position) {
-            ConstantsCustomGallery.TAB_PHOTOS_POSITION -> MediaStoreType.IMAGES
-            ConstantsCustomGallery.TAB_VIDEOS_POSITION -> MediaStoreType.VIDEOS
-            else -> MediaStoreType.MIXED
+        ConstantsCustomGallery.mediaType = when (position) {
+            ConstantsCustomGallery.TAB_PHOTOS_POSITION -> MediaType.IMAGES
+            ConstantsCustomGallery.TAB_VIDEOS_POSITION -> MediaType.VIDEOS
+            else -> MediaType.MIXED
         }
 
         adapter?.filterMedia()
@@ -263,16 +256,16 @@ class MediaActivity : HelperActivity() {
         val countSelected = ConstantsCustomGallery.currentlySelectedMap.size
         if (!mediaList[position].isSelected && countSelected >= ConstantsCustomGallery.limit) {
             var messageId = R.string.media_limit_exceeded
-            when (ConstantsCustomGallery.mediaStoreType) {
-                MediaStoreType.VIDEOS -> messageId = R.string.video_limit_exceeded
-                MediaStoreType.IMAGES -> messageId = R.string.image_limit_exceeded
+            when (ConstantsCustomGallery.mediaType) {
+                MediaType.VIDEOS -> messageId = R.string.video_limit_exceeded
+                MediaType.IMAGES -> messageId = R.string.image_limit_exceeded
                 else -> {}
             }
             Toast.makeText(applicationContext, getString(messageId, ConstantsCustomGallery.limit), Toast.LENGTH_SHORT).show()
             return
         }
 
-        val media: Media = mediaList.get(position)
+        val media: Media = mediaList[position]
         media.isSelected = !media.isSelected
         if (media.isSelected) {
             ConstantsCustomGallery.currentlySelectedMap[media.id.toString()] = media
@@ -280,22 +273,5 @@ class MediaActivity : HelperActivity() {
             ConstantsCustomGallery.currentlySelectedMap.remove(media.id.toString())
         }
         adapter?.notifyDataSetChanged()
-    }
-
-    private fun sendIntent() {
-
-        ConstantsCustomGallery.getPreviouslySelectedIds(this).addAll(ConstantsCustomGallery.currentlySelectedMap.keys)
-        ConstantsCustomGallery.savePreviouslySelectedIds(this)
-
-        val selectedVideos = ArrayList<Media>()
-        for ((_, value) in ConstantsCustomGallery.currentlySelectedMap) {
-            selectedVideos.add(value)
-        }
-
-        val intent = Intent()
-        intent.putParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA, selectedVideos)
-        setResult(RESULT_OK, intent)
-        finish()
-        overridePendingTransition(abc_fade_in, abc_fade_out)
     }
 }

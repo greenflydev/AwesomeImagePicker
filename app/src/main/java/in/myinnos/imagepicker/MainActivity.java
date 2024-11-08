@@ -25,10 +25,11 @@ import java.util.ArrayList;
 import in.myinnos.awesomeimagepicker.activities.AlbumActivity;
 import in.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery;
 import in.myinnos.awesomeimagepicker.models.Media;
-import in.myinnos.awesomeimagepicker.models.MediaStoreType;
+import in.myinnos.awesomeimagepicker.models.MediaType;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int REQUEST_CODE = 2000;
     private static final int READ_STORAGE_PERMISSION = 4000;
     private static final int LIMIT = 5;
 
@@ -52,26 +53,26 @@ public class MainActivity extends AppCompatActivity {
         chooseImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                choose(MediaStoreType.IMAGES);
+                choose(MediaType.IMAGES);
             }
         });
 
         chooseVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                choose(MediaStoreType.VIDEOS);
+                choose(MediaType.VIDEOS);
             }
         });
 
         chooseMixed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                choose(MediaStoreType.MIXED);
+                choose(MediaType.MIXED);
             }
         });
     }
 
-    private void choose(MediaStoreType type) {
+    private void choose(MediaType type) {
         if (Build.VERSION.SDK_INT >= 23) {
             if (!Helper.checkPermissionForExternalStorage(MainActivity.this)) {
                 Helper.requestStoragePermission(MainActivity.this, READ_STORAGE_PERMISSION);
@@ -79,14 +80,14 @@ public class MainActivity extends AppCompatActivity {
                 // opining custom gallery
                 Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
                 intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LIMIT, LIMIT);
-                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIASTORETYPE, type);
-                startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
+                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIATYPE, type);
+                startActivityForResult(intent, REQUEST_CODE);
             }
         } else {
             Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
             intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LIMIT, LIMIT);
-            intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIASTORETYPE, type);
-            startActivityForResult(intent, ConstantsCustomGallery.REQUEST_CODE);
+            intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIATYPE, type);
+            startActivityForResult(intent, REQUEST_CODE);
         }
     }
 
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ConstantsCustomGallery.REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             //The array list has the image paths of the selected images
             ArrayList<Media> media = data.getParcelableArrayListExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA);
 

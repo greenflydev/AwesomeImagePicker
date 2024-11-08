@@ -28,9 +28,8 @@
     <string name="album_select_videos">動画</string>
     <string name="album_select_photos">写真</string>
     <string name="album_select_media">メディア</string>
-    <string name="all_photos">すべての写真</string>
-    <string name="all_videos">すべての動画</string>
 
+    <string name="all_media">すべてのメディア</string>
     <string name="long_press_ftue_title">長押ししてプレビュー</string>
     <string name="long_press_ftue_message">アップロードするアセットを選択する前に、アセットを長押ししてプレビューします。</string>
     <string name="long_press_ftue_button">了解しました</string>

@@ -1,39 +1,37 @@
 package `in`.myinnos.awesomeimagepicker.adapter
 
-import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.databinding.GridViewMediaSelectBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
-import `in`.myinnos.awesomeimagepicker.models.Media
 import `in`.myinnos.awesomeimagepicker.models.Video
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import android.view.ViewGroup
 import android.view.LayoutInflater
-import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.Image
-import `in`.myinnos.awesomeimagepicker.models.MediaStoreType
+import `in`.myinnos.awesomeimagepicker.models.MediaType
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
 abstract class MediaSelectAdapter(private val context: Context,
-                                  private val mediaList: List<Media>) : RecyclerView.Adapter<MediaSelectAdapter.ViewHolder>() {
+                                  private val album: Album) : RecyclerView.Adapter<MediaSelectAdapter.ViewHolder>() {
 
     abstract fun clicked(position: Int)
     abstract fun longClicked(position: Int)
 
-    private var filteredMediaList = mediaList
+    private var filteredMediaList = album.mediaList
 
     fun filterMedia() {
-        filteredMediaList = when (ConstantsCustomGallery.mediaStoreType) {
-            MediaStoreType.IMAGES -> mediaList.filter { it is Image }
-            MediaStoreType.VIDEOS -> mediaList.filter { it is Video }
-            else -> mediaList
+        filteredMediaList = when (ConstantsCustomGallery.mediaType) {
+            MediaType.IMAGES -> album.mediaList.filter { it is Image }
+            MediaType.VIDEOS -> album.mediaList.filter { it is Video }
+            else -> album.mediaList
         }
         notifyDataSetChanged()
     }

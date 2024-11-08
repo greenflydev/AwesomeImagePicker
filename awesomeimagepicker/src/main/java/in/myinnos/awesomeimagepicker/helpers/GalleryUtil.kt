@@ -6,19 +6,23 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
+import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.Image
 import `in`.myinnos.awesomeimagepicker.models.Media
-import `in`.myinnos.awesomeimagepicker.models.MediaStoreType
+import `in`.myinnos.awesomeimagepicker.models.MediaType
 import `in`.myinnos.awesomeimagepicker.models.Video
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
 internal class GalleryUtil {
     companion object {
+
+        private val TAG = GalleryUtil::class.java.simpleName
+
+        val albums = mutableListOf<Album>()
 
         private const val INDEX_MEDIA_ID = MediaStore.MediaColumns._ID
         private const val INDEX_MEDIA_URI = MediaStore.MediaColumns.DATA
@@ -27,23 +31,15 @@ internal class GalleryUtil {
         private const val INDEX_ALBUM_NAME = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME
         private const val INDEX_DURATION = MediaStore.MediaColumns.DURATION
 
-        fun getMediaFromJava(context: Context, mediaType: MediaStoreType, callback: (List<Album>) -> Unit) {
-            CoroutineScope(Dispatchers.IO).launch {
-                val albums = getMedia(context, mediaType)
-                withContext(Dispatchers.Main) {
-                    callback(albums)
-                }
-            }
-        }
-
-        suspend fun getMedia(context: Context, mediaStoreType: MediaStoreType): List<Album> {
+        suspend fun loadMedia(context: Context, mediaType: MediaType): Boolean {
             return withContext(Dispatchers.IO) {
-                var result = mutableListOf<Album>()
+                var success = false
+                albums.clear()
                 try {
-                    val totalMediaList: List<Media> = when (mediaStoreType) {
-                        MediaStoreType.IMAGES -> getAllMediaList(context, QueryMediaType.IMAGE)
-                        MediaStoreType.VIDEOS -> getAllMediaList(context, QueryMediaType.VIDEO)
-                        MediaStoreType.MIXED -> {
+                    val totalMediaList: List<Media> = when (mediaType) {
+                        MediaType.IMAGES -> getAllMediaList(context, QueryMediaType.IMAGE)
+                        MediaType.VIDEOS -> getAllMediaList(context, QueryMediaType.VIDEO)
+                        MediaType.MIXED -> {
                             val imageMediaList = getAllMediaList(context, QueryMediaType.IMAGE)
                             val videoMediaList = getAllMediaList(context, QueryMediaType.VIDEO)
                             (imageMediaList + videoMediaList).sortedByDescending { it.dateAddedSecond }
@@ -51,28 +47,32 @@ internal class GalleryUtil {
                     }
                     val albumList: List<Album> = totalMediaList
                         .groupBy { media: Media -> media.albumId }
+                        // This would sort the albums alphabetically
 //                        .toSortedMap { albumName1: String, albumName2: String ->
 //                            albumName1.compareTo(albumName2, true)
 //                        }
                         .map { entry -> getAlbum(entry) }
                         .toList()
 
-
+                    // Add all media album to the top
                     val totalAlbum = totalMediaList.run {
-                        val albumName = "All" //context.getString(R.string.ted_image_picker_album_all)
-                        Album(0,
+                        val albumName = context.getString(R.string.all_media)
+                        Album(ConstantsCustomGallery.ALL_MEDIA_ALBUM_ID,
                             albumName,
                             firstOrNull()?.uri ?: Uri.EMPTY,
                             this
                         )
                     }
 
-                    result = mutableListOf(totalAlbum).apply { addAll(albumList) }
+                    albums.addAll(mutableListOf(totalAlbum).apply { addAll(albumList) })
+
+                    success = true
 
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    // Will return success = false
+                    Log.e(TAG, "Error loading albums, e = " + e.message)
                 }
-                result
+                success
             }
         }
 
@@ -95,15 +95,12 @@ internal class GalleryUtil {
             } else {
                 null
             }
-            val cursor =
-                context.contentResolver.query(
+            val cursor = context.contentResolver.query(
                     queryMediaType.contentUri,
                     projection,
                     selection,
                     null,
-                    sortOrder
-                )
-                    ?: return emptyList()
+                    sortOrder) ?: return emptyList()
 
             cursor.use {
                 return generateSequence { if (cursor.moveToNext()) cursor else null }
@@ -140,8 +137,8 @@ internal class GalleryUtil {
 
                     media
                 }
-            } catch (exception: Exception) {
-                exception.printStackTrace()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error loading media item, e = ${e.message}")
                 null
             }
 

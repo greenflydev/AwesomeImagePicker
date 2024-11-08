@@ -22,14 +22,6 @@
             android:name=".activities.MediaActivity"
             android:screenOrientation="portrait"
             android:hardwareAccelerated="true" />
-        <activity
-            android:name=".activities.AlbumSelectActivity"
-            android:screenOrientation="portrait"
-            android:hardwareAccelerated="true" />
-        <activity
-            android:name=".activities.MediaSelectActivity"
-            android:screenOrientation="portrait"
-            android:hardwareAccelerated="true" />
 
     </application>
 
