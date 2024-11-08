@@ -2,11 +2,13 @@ package `in`.myinnos.awesomeimagepicker.helpers
 
 import android.content.ContentUris
 import android.content.Context
+import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.Image
@@ -38,6 +40,7 @@ internal class GalleryUtil {
                 var success = false
                 albums.clear()
                 try {
+                    val time = System.currentTimeMillis()
                     val totalMediaList: List<Media> = when (mediaType) {
                         MediaType.IMAGES -> getAllMediaList(context, QueryMediaType.IMAGE)
                         MediaType.VIDEOS -> getAllMediaList(context, QueryMediaType.VIDEO)
@@ -47,6 +50,9 @@ internal class GalleryUtil {
                             (imageMediaList + videoMediaList).sortedByDescending { it.dateAddedSecond }
                         }
                     }
+
+                    broadcastMediaLoaded(context, totalMediaList.size, (System.currentTimeMillis() - time))
+
                     val albumList: List<Album> = totalMediaList
                         .groupBy { media: Media -> media.albumId }
                         // This would sort the albums alphabetically
@@ -76,6 +82,18 @@ internal class GalleryUtil {
                 }
                 success
             }
+        }
+
+        private fun broadcastMediaLoaded(context: Context, mediaCount: Int, loadingTime: Long) {
+            /*
+             * This will broadcast out that media was loaded into memory.
+             * Used for tracking in the calling application.
+             */
+            val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+            localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_MEDIA_LOADED, true)
+            localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIA_COUNT, mediaCount)
+            localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LOADING_TIME, loadingTime);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(localIntent)
         }
 
         private fun getAllMediaList(context: Context, queryMediaType: QueryMediaType): List<Media> {
