@@ -16,6 +16,11 @@ class Image : Media {
         dest.writeLong(id)
         dest.writeString(name)
         dest.writeString(uri.toString())
+        dest.writeLong(size)
+        dest.writeString(mimeType)
+        dest.writeLong(albumId)
+        dest.writeString(albumName)
+        dest.writeLong(dateAddedSecond)
         /*
          * Android 11 and up can check if the media is marked as favorite
          */
@@ -28,6 +33,11 @@ class Image : Media {
         id = parcel.readLong()
         name = parcel.readString()
         uri = Uri.parse(parcel.readString())
+        size = parcel.readLong()
+        mimeType = parcel.readString()
+        albumId = parcel.readLong()
+        albumName = parcel.readString()
+        dateAddedSecond = parcel.readLong()
         /*
          * Android 11 and up can check if the media is marked as favorite
          */

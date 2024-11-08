@@ -20,6 +20,11 @@ class Video : Media {
         dest.writeString(name)
         dest.writeLong(duration)
         dest.writeString(uri.toString())
+        dest.writeLong(size)
+        dest.writeString(mimeType)
+        dest.writeLong(albumId)
+        dest.writeString(albumName)
+        dest.writeLong(dateAddedSecond)
         /*
          * Android 11 and up can check if the media is marked as favorite
          */
@@ -33,6 +38,11 @@ class Video : Media {
         name = parcel.readString()
         duration = parcel.readLong()
         uri = Uri.parse(parcel.readString())
+        size = parcel.readLong()
+        mimeType = parcel.readString()
+        albumId = parcel.readLong()
+        albumName = parcel.readString()
+        dateAddedSecond = parcel.readLong()
         /*
          * Android 11 and up can check if the media is marked as favorite
          */

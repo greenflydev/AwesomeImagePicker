@@ -11,6 +11,8 @@ abstract class Media : Parcelable {
     var id: Long = 0
     var name: String? = null
     var uri: Uri? = null
+    var size: Long = 0
+    var mimeType: String? = null
     var albumId: Long = 0
     var albumName: String? = null
     var dateAddedSecond: Long = 0

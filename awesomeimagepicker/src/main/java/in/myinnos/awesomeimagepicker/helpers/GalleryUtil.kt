@@ -26,6 +26,8 @@ internal class GalleryUtil {
 
         private const val INDEX_MEDIA_ID = MediaStore.MediaColumns._ID
         private const val INDEX_MEDIA_URI = MediaStore.MediaColumns.DATA
+        private const val INDEX_MEDIA_SIZE = MediaStore.MediaColumns.SIZE
+        private const val INDEX_MEDIA_MIMETYPE = MediaStore.MediaColumns.MIME_TYPE
         private const val INDEX_DATE_ADDED = MediaStore.MediaColumns.DATE_ADDED
         private const val INDEX_ALBUM_ID = MediaStore.MediaColumns.BUCKET_ID
         private const val INDEX_ALBUM_NAME = MediaStore.MediaColumns.BUCKET_DISPLAY_NAME
@@ -82,6 +84,8 @@ internal class GalleryUtil {
             val projection = mutableListOf(
                 INDEX_MEDIA_ID,
                 INDEX_MEDIA_URI,
+                INDEX_MEDIA_SIZE,
+                INDEX_MEDIA_MIMETYPE,
                 INDEX_ALBUM_ID,
                 INDEX_ALBUM_NAME,
                 INDEX_DATE_ADDED,
@@ -120,6 +124,8 @@ internal class GalleryUtil {
                     val albumName = getString(getColumnIndexOrThrow(INDEX_ALBUM_NAME))
                     val mediaId = getLong(getColumnIndexOrThrow(INDEX_MEDIA_ID))
                     val mediaUri = getMediaUri(queryMediaType)
+                    val mediaSize = getLong(getColumnIndexOrThrow(INDEX_MEDIA_SIZE))
+                    val mimeType = getString(getColumnIndexOrThrow(INDEX_MEDIA_MIMETYPE))
                     val datedAddedSecond = getLong(getColumnIndexOrThrow(INDEX_DATE_ADDED))
 
                     val media = when (queryMediaType) {
@@ -133,6 +139,8 @@ internal class GalleryUtil {
                     media.albumId = albumId
                     media.albumName = albumName
                     media.uri = mediaUri
+                    media.size = mediaSize
+                    media.mimeType = mimeType
                     media.dateAddedSecond = datedAddedSecond
 
                     media
