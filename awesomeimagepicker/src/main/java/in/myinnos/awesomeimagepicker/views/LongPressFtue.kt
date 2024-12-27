@@ -37,10 +37,10 @@ class LongPressFtue @JvmOverloads constructor(
     }
 
     fun checkLongPressFTUE() {
-        val viewedFtue: Boolean = ConstantsCustomGallery.getBooleanFromMainSP(context, ConstantsCustomGallery.SP_LONG_PRESS_FTUE_VIEWED)
-        if (!viewedFtue) {
+//        val viewedFtue: Boolean = ConstantsCustomGallery.getBooleanFromMainSP(context, ConstantsCustomGallery.SP_LONG_PRESS_FTUE_VIEWED)
+//        if (!viewedFtue) {
             displayLongPressFTUE()
-        }
+//        }
     }
 
     private fun displayLongPressFTUE() {

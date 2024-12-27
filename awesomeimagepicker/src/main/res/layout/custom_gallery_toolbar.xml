@@ -9,10 +9,10 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/branding_toolbar"
+        android:background="@color/colorPrimary"
         android:contentInsetEnd="0dp"
         android:contentInsetRight="0dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Light">
+        android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/toolbar_back"
                 android:layout_centerVertical="true"
-                android:textColor="#000000"
+                android:textColor="@color/textColorPrimary"
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
                 android:ellipsize="end"
@@ -39,7 +39,7 @@
                 android:layout_marginEnd="10dp"
                 android:padding="5dp"
                 android:text="@string/add"
-                android:textColor="#000000"
+                android:textColor="@color/textColorPrimary"
                 android:textSize="16sp"
                 android:fontFamily="sans-serif-medium"
                 android:visibility="gone" />

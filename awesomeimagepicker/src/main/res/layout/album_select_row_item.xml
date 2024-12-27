@@ -22,7 +22,7 @@
         android:id="@+id/text_view"
         android:layout_toEndOf="@+id/rlThumbnail"
         android:textSize="18sp"
-        android:textColor="#000000"
+        android:textAppearance="@style/TextPrimary"
         android:includeFontPadding="false"
         android:layout_marginStart="8dp"
         android:layout_centerVertical="true"
@@ -33,7 +33,7 @@
 
     <View
         android:layout_below="@id/rlThumbnail"
-        android:background="#e2e2e2"
+        android:background="@color/colorSecondary"
         android:layout_marginStart="60dp"
         android:layout_width="match_parent"
         android:layout_height="1dp" />
