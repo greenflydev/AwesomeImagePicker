@@ -32,6 +32,8 @@ class MediaActivity : HelperActivity() {
 
     private lateinit var album: Album
 
+    private var currentMediaType = MediaType.MIXED
+
     private var adapter: MediaSelectAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,18 +60,13 @@ class MediaActivity : HelperActivity() {
         /*
          * This is the media type that comes from GF. Can be mixed, photos, or videos.
          *
-         * We are storing it locally here because the user might have picked all photos or all videos.
-         * We don't want to overwrite the global type of media, such as mixed.
-         *
-         * Example:
-         * Globally: The user can pick mixed
-         * In the album list the user picked : All Photos
-         * In this media list we only need to show mediaStoreType = MediaStoreType.IMAGES
+         * Using a local variable so when the user filters to only photos or videos we
+         * wont override the global type.
          */
-        val mediaStoreType = ConstantsCustomGallery.mediaType
+        currentMediaType = ConstantsCustomGallery.mediaType
 
         var titleId = R.string.media_view
-        when (mediaStoreType) {
+        when (currentMediaType) {
             MediaType.VIDEOS -> titleId = if (ConstantsCustomGallery.limit == 1) {
                 R.string.single_video_view
             } else {
@@ -108,14 +105,14 @@ class MediaActivity : HelperActivity() {
         binding.longPressFtue.checkLongPressFTUE()
 
         adapter = object : MediaSelectAdapter(this@MediaActivity, album) {
-            override fun clicked(position: Int) {
-                toggleSelection(position)
+            override fun clicked(media: Media) {
+                toggleSelection(media)
 
                 displaySelectedCount()
             }
 
-            override fun longClicked(position: Int) {
-                showMediaPreview(position)
+            override fun longClicked(media: Media) {
+                showMediaPreview(media)
             }
         }
         binding.recyclerView.adapter = adapter
@@ -163,16 +160,12 @@ class MediaActivity : HelperActivity() {
         orientationBasedUI(newConfig.orientation)
     }
 
-    private fun showMediaPreview(position: Int) {
-        album.mediaList?.let { mediaList ->
-            val media: Media = mediaList[position]
-
-            /*
-             * This will check if the user should see the FTUE, and if they should
-             * then display it to the user.
-             */
-            binding.mediaPreview.showMediaPreview(media)
-        }
+    private fun showMediaPreview(media: Media) {
+        /*
+         * This will check if the user should see the FTUE, and if they should
+         * then display it to the user.
+         */
+        binding.mediaPreview.showMediaPreview(media)
     }
 
     private fun displaySelectedCount() {
@@ -197,9 +190,7 @@ class MediaActivity : HelperActivity() {
      */
     private fun setupTabLayout() {
 
-        val mediaStoreType = ConstantsCustomGallery.mediaType
-
-        if (mediaStoreType == MediaType.MIXED) {
+        if (ConstantsCustomGallery.mediaType == MediaType.MIXED) {
 
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_all_media)));
             binding.tabLayout.addTab(binding.tabLayout.newTab().setText(getString(R.string.tab_photos)));
@@ -231,13 +222,13 @@ class MediaActivity : HelperActivity() {
      */
     private fun tabSelected(position: Int) {
 
-        ConstantsCustomGallery.mediaType = when (position) {
+        currentMediaType = when (position) {
             ConstantsCustomGallery.TAB_PHOTOS_POSITION -> MediaType.IMAGES
             ConstantsCustomGallery.TAB_VIDEOS_POSITION -> MediaType.VIDEOS
             else -> MediaType.MIXED
         }
 
-        adapter?.filterMedia()
+        adapter?.filterMedia(currentMediaType)
 
         /*
          * This will broadcast out that the user filtered to a media type.
@@ -249,12 +240,10 @@ class MediaActivity : HelperActivity() {
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
     }
 
-    private fun toggleSelection(position: Int) {
-
-        val mediaList = album.mediaList
+    private fun toggleSelection(media: Media) {
 
         val countSelected = ConstantsCustomGallery.currentlySelectedMap.size
-        if (!mediaList[position].isSelected && countSelected >= ConstantsCustomGallery.limit) {
+        if (!media.isSelected && countSelected >= ConstantsCustomGallery.limit) {
             var messageId = R.string.media_limit_exceeded
             when (ConstantsCustomGallery.mediaType) {
                 MediaType.VIDEOS -> messageId = R.string.video_limit_exceeded
@@ -265,7 +254,6 @@ class MediaActivity : HelperActivity() {
             return
         }
 
-        val media: Media = mediaList[position]
         media.isSelected = !media.isSelected
         if (media.isSelected) {
             ConstantsCustomGallery.currentlySelectedMap[media.id.toString()] = media

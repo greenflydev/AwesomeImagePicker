@@ -14,6 +14,7 @@ import android.view.View
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.Image
+import `in`.myinnos.awesomeimagepicker.models.Media
 import `in`.myinnos.awesomeimagepicker.models.MediaType
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -22,13 +23,13 @@ import java.util.concurrent.TimeUnit
 abstract class MediaSelectAdapter(private val context: Context,
                                   private val album: Album) : RecyclerView.Adapter<MediaSelectAdapter.ViewHolder>() {
 
-    abstract fun clicked(position: Int)
-    abstract fun longClicked(position: Int)
+    abstract fun clicked(media: Media)
+    abstract fun longClicked(media: Media)
 
     private var filteredMediaList = album.mediaList
 
-    fun filterMedia() {
-        filteredMediaList = when (ConstantsCustomGallery.mediaType) {
+    fun filterMedia(mediaType: MediaType) {
+        filteredMediaList = when (mediaType) {
             MediaType.IMAGES -> album.mediaList.filter { it is Image }
             MediaType.VIDEOS -> album.mediaList.filter { it is Video }
             else -> album.mediaList
@@ -99,11 +100,13 @@ abstract class MediaSelectAdapter(private val context: Context,
             binding.bottomGradient.visibility = View.VISIBLE
         }
 
-        binding.root.setOnClickListener { clicked(position) }
+        binding.root.setOnClickListener {
+            clicked(media)
+        }
 
         // Long click to see a preview of the image or video
         binding.root.setOnLongClickListener {
-            longClicked(position)
+            longClicked(media)
             // Return true or it will also trigger an on click event
             true
         }
