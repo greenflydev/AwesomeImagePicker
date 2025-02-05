@@ -117,16 +117,8 @@ class MediaActivity : HelperActivity() {
         }
         binding.recyclerView.adapter = adapter
 
-        when (album.mediaList.size) {
-            0 -> {
-                binding.emptyView.visibility = View.VISIBLE
-                binding.recyclerView.visibility = View.GONE
-            }
-            else -> {
-                binding.emptyView.visibility = View.GONE
-                binding.recyclerView.visibility = View.VISIBLE
-            }
-        }
+        setMessageDisplays(album.mediaList.size)
+
         orientationBasedUI(resources.configuration.orientation)
     }
 
@@ -228,7 +220,8 @@ class MediaActivity : HelperActivity() {
             else -> MediaType.MIXED
         }
 
-        adapter?.filterMedia(currentMediaType)
+        val mediaCount = adapter?.filterMedia(currentMediaType) ?: 0
+        setMessageDisplays(mediaCount)
 
         /*
          * This will broadcast out that the user filtered to a media type.
@@ -238,6 +231,30 @@ class MediaActivity : HelperActivity() {
         localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_FILTER_BY_TYPE, true)
         localIntent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_FILTER_BY_TYPE, position)
         LocalBroadcastManager.getInstance(this).sendBroadcast(localIntent)
+    }
+
+    private fun setMessageDisplays(mediaCount: Int) {
+
+        when (mediaCount) {
+            0 -> {
+                binding.emptyView.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+
+                val mediaTypeName = if (currentMediaType == MediaType.VIDEOS) {
+                    getString(R.string.album_select_videos)
+                } else if (currentMediaType == MediaType.IMAGES) {
+                    getString(R.string.album_select_photos)
+                } else {
+                    getString(R.string.album_select_media)
+                }
+
+                binding.emptyView.text = getString(R.string.activity_media_empty, mediaTypeName)
+            }
+            else -> {
+                binding.emptyView.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun toggleSelection(media: Media) {
