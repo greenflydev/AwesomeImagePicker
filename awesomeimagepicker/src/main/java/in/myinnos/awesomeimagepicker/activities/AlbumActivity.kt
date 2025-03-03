@@ -1,11 +1,19 @@
 package `in`.myinnos.awesomeimagepicker.activities
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +39,14 @@ class AlbumActivity : HelperActivity() {
     private lateinit var mediaSelectResult: ActivityResultLauncher<Intent>
 
     private var adapter: AlbumSelectAdapter? = null
+
+    private val STORAGE_PERMISSION_REQUEST_CODE = 1234
+
+    private val requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+        val intent = intent
+        finish()
+        startActivity(intent)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,12 +129,35 @@ class AlbumActivity : HelperActivity() {
         }
         binding.recyclerView.setAdapter(adapter);
 
-        checkPermission()
-    }
-
-    override fun permissionGranted() {
+        checkPermissions()
         loadAlbums()
     }
+
+    private fun checkPermissions() {
+
+        if (showLimitedAccess()) {
+            binding.limitedAccess.visibility = View.VISIBLE
+            binding.settings.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                    requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO)) //, READ_MEDIA_VISUAL_USER_SELECTED))
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO))
+                } else {
+                    requestPermissions.launch(arrayOf(READ_EXTERNAL_STORAGE))
+                }
+            }
+        } else {
+            binding.limitedAccess.visibility = View.GONE
+        }
+    }
+
+//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+//        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+//            checkPermissions()
+//            loadAlbums()
+//        }
+//    }
 
     override fun onResume() {
         super.onResume()

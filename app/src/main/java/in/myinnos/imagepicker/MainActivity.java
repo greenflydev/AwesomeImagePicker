@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -73,22 +72,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void choose(MediaType type) {
-        if (Build.VERSION.SDK_INT >= 23) {
-            if (!Helper.checkPermissionForExternalStorage(MainActivity.this)) {
-                Helper.requestStoragePermission(MainActivity.this, READ_STORAGE_PERMISSION);
-            } else {
-                // opining custom gallery
-                Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
-                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LIMIT, LIMIT);
-                intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIATYPE, type);
-                startActivityForResult(intent, REQUEST_CODE);
-            }
-        } else {
+//        if (!Helper.checkPermissionForExternalStorage(MainActivity.this)) {
+//            Helper.requestStoragePermission(MainActivity.this, READ_STORAGE_PERMISSION);
+//        } else {
+            // opining custom gallery
             Intent intent = new Intent(MainActivity.this, AlbumActivity.class);
             intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_LIMIT, LIMIT);
             intent.putExtra(ConstantsCustomGallery.INTENT_EXTRA_MEDIATYPE, type);
             startActivityForResult(intent, REQUEST_CODE);
-        }
+//        }
     }
 
     @Override
