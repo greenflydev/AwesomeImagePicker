@@ -5,11 +5,14 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.snackbar.Snackbar
 import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.R.anim.abc_fade_in
@@ -24,6 +27,35 @@ open class HelperActivity : AppCompatActivity() {
     protected var view: View? = null
 
     private val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        /*
+         * This will force the status and navigation bar to be visible on android 15
+         */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+
+            // To force full screen for testing
+            //WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+            val decorView = window.decorView
+
+            ViewCompat.setOnApplyWindowInsetsListener(decorView) { v: View, insets: WindowInsetsCompat ->
+                insets.toWindowInsets()?.let { it ->
+                    val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(it)
+                    val left = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).left
+                    val top = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                    val right = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).right
+                    val bottom = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+
+                    // Apply padding to prevent overlap with system bars
+                    v.setPadding(left, top, right, bottom)
+                }
+                insets
+            }
+        }
+    }
 
     protected fun sendIntent() {
 
