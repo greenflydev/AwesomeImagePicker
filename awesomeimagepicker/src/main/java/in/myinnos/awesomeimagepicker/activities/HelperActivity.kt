@@ -3,11 +3,14 @@ package `in`.myinnos.awesomeimagepicker.activities
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import androidx.activity.SystemBarStyle
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,31 +32,35 @@ open class HelperActivity : AppCompatActivity() {
     private val permissions = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        enableEdgeToEdge(
+                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
+                SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+            )
+
         super.onCreate(savedInstanceState)
 
-        /*
-         * This will force the status and navigation bar to be visible on android 15
-         */
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        applyWindowInsetsDecorView()
+    }
 
-            // To force full screen for testing
-            //WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+    private fun applyWindowInsetsDecorView() {
 
-            val decorView = window.decorView
+        val decorView = window.decorView
 
-            ViewCompat.setOnApplyWindowInsetsListener(decorView) { v: View, insets: WindowInsetsCompat ->
-                insets.toWindowInsets()?.let { it ->
-                    val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(it)
-                    val left = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).left
-                    val top = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).top
-                    val right = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).right
-                    val bottom = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
+        ViewCompat.setOnApplyWindowInsetsListener(decorView) { v: View, insets: WindowInsetsCompat ->
+            insets.toWindowInsets()?.let { it ->
+                val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(it)
+                val left = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).left
+                val top = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).top
+                val right = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).right
+                val bottom = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
 
-                    // Apply padding to prevent overlap with system bars
-                    v.setPadding(left, top, right, bottom)
-                }
-                insets
+                v.setBackgroundColor(Color.WHITE)
+
+                // Apply padding to prevent overlap with system bars
+                v.setPadding(left, top, right, bottom)
             }
+            insets
         }
     }
 
