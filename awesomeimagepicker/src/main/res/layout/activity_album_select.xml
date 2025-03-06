@@ -24,6 +24,7 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/limited_access_text"
             android:layout_alignParentStart="true"
             android:layout_toStartOf="@+id/settings"
             android:text="@string/permission_limited"

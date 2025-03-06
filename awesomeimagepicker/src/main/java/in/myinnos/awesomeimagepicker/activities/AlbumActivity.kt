@@ -5,10 +5,12 @@ import android.Manifest.permission.READ_MEDIA_IMAGES
 import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -40,9 +42,13 @@ class AlbumActivity : HelperActivity() {
 
     private var adapter: AlbumSelectAdapter? = null
 
-    private val STORAGE_PERMISSION_REQUEST_CODE = 1234
-
     private val requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+        val intent = intent
+        finish()
+        startActivity(intent)
+    }
+
+    private val openSettings = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         val intent = intent
         finish()
         startActivity(intent)
@@ -54,7 +60,6 @@ class AlbumActivity : HelperActivity() {
         binding = ActivityAlbumSelectBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
-        setSnackbarView(binding.root) // For handling permissions
 
         val intent = intent
         if (intent == null) {
@@ -135,29 +140,42 @@ class AlbumActivity : HelperActivity() {
 
     private fun checkPermissions() {
 
-        if (showLimitedAccess()) {
-            binding.limitedAccess.visibility = View.VISIBLE
-            binding.settings.setOnClickListener {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO)) //, READ_MEDIA_VISUAL_USER_SELECTED))
-                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO))
-                } else {
-                    requestPermissions.launch(arrayOf(READ_EXTERNAL_STORAGE))
+        val storageStatus = getStorageStatus()
+        when (storageStatus) {
+            StorageStatus.FULL_ACCESS -> {
+                binding.limitedAccess.visibility = View.GONE
+            }
+            StorageStatus.LIMITED_ACCESS -> {
+                binding.limitedAccess.visibility = View.VISIBLE
+                binding.limitedAccessText.text = getString(R.string.permission_limited)
+                binding.settings.text = getString(R.string.permission_manage)
+                binding.settings.setOnClickListener {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO))
+                    } else {
+                        requestPermissions.launch(arrayOf(READ_EXTERNAL_STORAGE))
+                    }
                 }
             }
-        } else {
-            binding.limitedAccess.visibility = View.GONE
+            StorageStatus.DENIED_ACCESS -> {
+                binding.limitedAccess.visibility = View.VISIBLE
+                binding.limitedAccessText.text = getString(R.string.permission_force)
+                binding.settings.text = getString(R.string.permission_settings)
+                binding.settings.setOnClickListener {
+                    val uri = Uri.fromParts(
+                        getString(R.string.permission_package),
+                        this@AlbumActivity.packageName,
+                        null
+                    )
+                    val intent = Intent()
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                    intent.setData(uri)
+                    openSettings.launch(intent)
+                }
+            }
         }
     }
-
-//    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
-//            checkPermissions()
-//            loadAlbums()
-//        }
-//    }
 
     override fun onResume() {
         super.onResume()
