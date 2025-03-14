@@ -150,6 +150,12 @@ class AlbumActivity : HelperActivity() {
                 binding.limitedAccessText.text = getString(R.string.permission_limited)
                 binding.settings.text = getString(R.string.permission_manage)
                 binding.settings.setOnClickListener {
+
+                    // For mixpanel tracking when the user taps to manage limited access to storage
+                    val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_MANAGE_STORAGE, true)
+                    LocalBroadcastManager.getInstance(this@AlbumActivity).sendBroadcast(localIntent)
+
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO))
                     } else {
@@ -162,11 +168,13 @@ class AlbumActivity : HelperActivity() {
                 binding.limitedAccessText.text = getString(R.string.permission_force)
                 binding.settings.text = getString(R.string.permission_settings)
                 binding.settings.setOnClickListener {
-                    val uri = Uri.fromParts(
-                        getString(R.string.permission_package),
-                        this@AlbumActivity.packageName,
-                        null
-                    )
+
+                    // For mixpanel tracking when the user taps to open settings
+                    val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_OPEN_SETTINGS, true)
+                    LocalBroadcastManager.getInstance(this@AlbumActivity).sendBroadcast(localIntent)
+
+                    val uri = Uri.fromParts(getString(R.string.permission_package), this@AlbumActivity.packageName, null)
                     val intent = Intent()
                     intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
