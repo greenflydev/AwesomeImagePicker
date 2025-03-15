@@ -4,8 +4,10 @@
     <!--Request Permission-->
     <string name="permission_info">App requires permission to Storage to view media.</string>
     <string name="permission_force">App requires permission to Storage to view media. Tap Settings and go to Permissions to grant permission.</string>
+    <string name="permission_limited">You\'ve allowed access to limited media. Tap Manage to add more or allow access to all media.</string>
     <string name="permission_ok">OK</string>
     <string name="permission_settings">Settings</string>
+    <string name="permission_manage">Manage</string>
     <string name="permission_package">package</string>
 
     <string name="album_view">Select album</string>

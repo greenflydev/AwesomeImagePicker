@@ -112,11 +112,7 @@ internal class GalleryUtil {
                     add(INDEX_DURATION)
                 }
             }.toTypedArray()
-            val selection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                MediaStore.Images.Media.SIZE + " > 0"
-            } else {
-                null
-            }
+            val selection = MediaStore.Images.Media.SIZE + " > 0"
             val cursor = context.contentResolver.query(
                     queryMediaType.contentUri,
                     projection,
@@ -168,14 +164,10 @@ internal class GalleryUtil {
                 null
             }
 
-        private fun Cursor.getMediaUri(queryMediaType: QueryMediaType): Uri =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val id = getLong(getColumnIndexOrThrow(INDEX_MEDIA_ID))
-                ContentUris.withAppendedId(queryMediaType.contentUri, id)
-            } else {
-                val mediaPath = getString(getColumnIndexOrThrow(INDEX_MEDIA_URI))
-                Uri.fromFile(File(mediaPath))
-            }
+        private fun Cursor.getMediaUri(queryMediaType: QueryMediaType): Uri {
+            val id = getLong(getColumnIndexOrThrow(INDEX_MEDIA_ID))
+            return ContentUris.withAppendedId(queryMediaType.contentUri, id)
+        }
 
         private enum class QueryMediaType(val contentUri: Uri) {
             IMAGE(MediaStore.Images.Media.EXTERNAL_CONTENT_URI),
