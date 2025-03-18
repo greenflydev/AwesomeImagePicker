@@ -5,8 +5,10 @@
     <!--Request Permission-->
     <string name="permission_info">La aplicación requiere el permiso del almacenamiento para ver los archivos.</string>
     <string name="permission_force">La aplicación requiere permiso del almacenamiento para ver los archivos. Toca en Ajustes y ve a Permisos para activarlo</string>
+    <string name="permission_limited">Ha permitido el acceso a medios limitados. Toque Gestionar para agregar más o permitir el acceso a todos los medios.</string>
     <string name="permission_ok">Aceptar</string>
     <string name="permission_settings">Ajustes</string>
+    <string name="permission_manage">Gestionar</string>
     <string name="permission_package">paquete</string>
 
     <string name="album_view">Selecciona un álbum</string>
