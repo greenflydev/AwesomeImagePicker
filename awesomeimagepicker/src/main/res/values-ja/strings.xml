@@ -5,8 +5,10 @@
     <!--Request Permission-->
     <string name="permission_info">アプリがメディアを表示するにはストレージへのアクセス許可が必要です。</string>
     <string name="permission_force">アプリがメディアを表示するにはストレージへのアクセス許可が必要です。 [設定] をタップし、[アプリの権限] に移動して権限を付与します。</string>
+    <string name="permission_limited">限定されたメディアへのアクセスを許可しました。「管理」をタップして、さらにメディアを追加するか、すべてのメディアへのアクセスを許可します。</string>
     <string name="permission_ok">OK</string>
     <string name="permission_settings">設定</string>
+    <string name="permission_manage">管理</string>
     <string name="permission_package">パッケージ</string>
 
     <string name="album_view">アルバムを選択</string>
