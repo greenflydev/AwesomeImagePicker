@@ -43,15 +43,13 @@ class AlbumActivity : HelperActivity() {
     private var adapter: AlbumSelectAdapter? = null
 
     private val requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
-        val intent = intent
-        finish()
-        startActivity(intent)
+        checkPermissions()
+        loadAlbums()
     }
 
     private val openSettings = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        val intent = intent
-        finish()
-        startActivity(intent)
+        checkPermissions()
+        loadAlbums()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,13 +104,6 @@ class AlbumActivity : HelperActivity() {
                 sendIntent()
             }
         })
-
-        /*
-         * Whenever this is loaded for the first time, clear out the list of selected items.
-         * Only clear it here because the user should be able to go between albums and select
-         * more items.
-         */
-        ConstantsCustomGallery.currentlySelectedMap.clear()
 
         adapter = object: AlbumSelectAdapter(this@AlbumActivity) {
 
@@ -198,6 +189,13 @@ class AlbumActivity : HelperActivity() {
     @OptIn(DelicateCoroutinesApi::class)
     private fun loadAlbums() {
 
+        /*
+         * Whenever all of the albums are loaded, clear out the list of selected items.
+         * The user can still go between albums and select more items because loading only
+         * happens on launch and if storage permissions are updated.
+         */
+        ConstantsCustomGallery.currentlySelectedMap.clear()
+
         binding.loader.visibility = View.VISIBLE
         binding.errorDisplay.visibility = View.GONE
         binding.recyclerView.visibility = View.GONE
@@ -218,6 +216,12 @@ class AlbumActivity : HelperActivity() {
                     binding.recyclerView.visibility = View.GONE
                 }
             }
+
+            /*
+             * If storage permissions are changed and albums are reloaded, need to let the adapter
+             * know to refresh the items.
+             */
+            adapter?.notifyDataSetChanged()
         }
     }
 
