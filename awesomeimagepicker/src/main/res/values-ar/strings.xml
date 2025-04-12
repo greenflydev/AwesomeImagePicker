@@ -5,8 +5,10 @@
     <!--Request Permission-->
     <string name="permission_info">يتطلب التطبيق إذنا للتخزين لعرض الوسائط.</string>
     <string name="permission_force">يتطلب التطبيق إذنًا للتخزين لعرض الوسائط. انقر على \"الإعدادات\" وانتقِل إلى \"الأذونات\" لمنح الإذن.</string>
+    <string name="permission_limited">لقد سمحت بالوصول إلى وسائط محدودة. اضغط على \"إدارة\" لإضافة المزيد أو السماح بالوصول إلى جميع الوسائط.</string>
     <string name="permission_ok">موافقة</string>
     <string name="permission_settings">الإعدادات</string>
+    <string name="permission_manage">إدارة</string>
     <string name="permission_package">حزمة البرامج</string>
 
     <string name="album_view">حدد الألبوم</string>
@@ -28,8 +30,8 @@
     <string name="album_select_videos">مقاطع الفيديو</string>
     <string name="album_select_photos">الصور</string>
     <string name="album_select_media">الوسائط</string>
-
     <string name="all_media">جميع الوسائط</string>
+
     <string name="long_press_ftue_title">اضغط لفترة طويلة للمعاينة</string>
     <string name="long_press_ftue_message">اضغط لفترة طويلة على مادة العرض لمعاينتها قبل تحديدها للتحميل</string>
     <string name="long_press_ftue_button">فهمت</string>

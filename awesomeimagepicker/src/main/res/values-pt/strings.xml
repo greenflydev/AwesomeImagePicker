@@ -5,8 +5,10 @@
     <!--Request Permission-->
     <string name="permission_info">O aplicativo exige a permissão de armazenamento para visualizar a mídia.</string>
     <string name="permission_force">O aplicativo exige a permissão de armazenamento para visualizar a mídia. Toque em \"Configurações\" e acesse \"Permissões\" para conceder a permissão.</string>
+    <string name="permission_limited">Você permitiu o acesso a uma mídia limitada. Toque em Gerenciar para adicionar mais ou permitir o acesso a todas as mídias.</string>
     <string name="permission_ok">OK</string>
     <string name="permission_settings">Configurações</string>
+    <string name="permission_manage">Gerenciar</string>
     <string name="permission_package">pacote</string>
 
     <string name="album_view">Selecionar álbum</string>
@@ -28,8 +30,8 @@
     <string name="album_select_videos">vídeos</string>
     <string name="album_select_photos">fotos</string>
     <string name="album_select_media">mídias</string>
-
     <string name="all_media">Todas as mídias</string>
+
     <string name="long_press_ftue_title">Pressione e segure para visualizar</string>
     <string name="long_press_ftue_message">Pressione e segure um recurso para visualizá-lo antes de selecioná-lo para fazer o upload.</string>
     <string name="long_press_ftue_button">Entendi</string>

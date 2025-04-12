@@ -1,11 +1,21 @@
 package `in`.myinnos.awesomeimagepicker.activities
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
+import android.Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.Settings
 import android.view.View
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -32,13 +42,22 @@ class AlbumActivity : HelperActivity() {
 
     private var adapter: AlbumSelectAdapter? = null
 
+    private val requestPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
+        checkPermissions()
+        loadAlbums()
+    }
+
+    private val openSettings = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        checkPermissions()
+        loadAlbums()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityAlbumSelectBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
-        setSnackbarView(binding.root) // For handling permissions
 
         val intent = intent
         if (intent == null) {
@@ -86,13 +105,6 @@ class AlbumActivity : HelperActivity() {
             }
         })
 
-        /*
-         * Whenever this is loaded for the first time, clear out the list of selected items.
-         * Only clear it here because the user should be able to go between albums and select
-         * more items.
-         */
-        ConstantsCustomGallery.currentlySelectedMap.clear()
-
         adapter = object: AlbumSelectAdapter(this@AlbumActivity) {
 
             override fun clicked(position: Int, album: Album) {
@@ -113,11 +125,55 @@ class AlbumActivity : HelperActivity() {
         }
         binding.recyclerView.setAdapter(adapter);
 
-        checkPermission()
+        checkPermissions()
+        loadAlbums()
     }
 
-    override fun permissionGranted() {
-        loadAlbums()
+    private fun checkPermissions() {
+
+        val storageStatus = getStorageStatus()
+        when (storageStatus) {
+            StorageStatus.FULL_ACCESS -> {
+                binding.limitedAccess.visibility = View.GONE
+            }
+            StorageStatus.LIMITED_ACCESS -> {
+                binding.limitedAccess.visibility = View.VISIBLE
+                binding.limitedAccessText.text = getString(R.string.permission_limited)
+                binding.settings.text = getString(R.string.permission_manage)
+                binding.settings.setOnClickListener {
+
+                    // For mixpanel tracking when the user taps to manage limited access to storage
+                    val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_MANAGE_STORAGE, true)
+                    LocalBroadcastManager.getInstance(this@AlbumActivity).sendBroadcast(localIntent)
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        requestPermissions.launch(arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO))
+                    } else {
+                        requestPermissions.launch(arrayOf(READ_EXTERNAL_STORAGE))
+                    }
+                }
+            }
+            StorageStatus.DENIED_ACCESS -> {
+                binding.limitedAccess.visibility = View.VISIBLE
+                binding.limitedAccessText.text = getString(R.string.permission_force)
+                binding.settings.text = getString(R.string.permission_settings)
+                binding.settings.setOnClickListener {
+
+                    // For mixpanel tracking when the user taps to open settings
+                    val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                    localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_OPEN_SETTINGS, true)
+                    LocalBroadcastManager.getInstance(this@AlbumActivity).sendBroadcast(localIntent)
+
+                    val uri = Uri.fromParts(getString(R.string.permission_package), this@AlbumActivity.packageName, null)
+                    val intent = Intent()
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+                    intent.setData(uri)
+                    openSettings.launch(intent)
+                }
+            }
+        }
     }
 
     override fun onResume() {
@@ -132,6 +188,13 @@ class AlbumActivity : HelperActivity() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun loadAlbums() {
+
+        /*
+         * Whenever all of the albums are loaded, clear out the list of selected items.
+         * The user can still go between albums and select more items because loading only
+         * happens on launch and if storage permissions are updated.
+         */
+        ConstantsCustomGallery.currentlySelectedMap.clear()
 
         binding.loader.visibility = View.VISIBLE
         binding.errorDisplay.visibility = View.GONE
@@ -153,6 +216,12 @@ class AlbumActivity : HelperActivity() {
                     binding.recyclerView.visibility = View.GONE
                 }
             }
+
+            /*
+             * If storage permissions are changed and albums are reloaded, need to let the adapter
+             * know to refresh the items.
+             */
+            adapter?.notifyDataSetChanged()
         }
     }
 

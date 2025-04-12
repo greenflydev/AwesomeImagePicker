@@ -28,13 +28,14 @@ abstract class MediaSelectAdapter(private val context: Context,
 
     private var filteredMediaList = album.mediaList
 
-    fun filterMedia(mediaType: MediaType) {
+    fun filterMedia(mediaType: MediaType): Int {
         filteredMediaList = when (mediaType) {
             MediaType.IMAGES -> album.mediaList.filter { it is Image }
             MediaType.VIDEOS -> album.mediaList.filter { it is Video }
             else -> album.mediaList
         }
         notifyDataSetChanged()
+        return filteredMediaList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

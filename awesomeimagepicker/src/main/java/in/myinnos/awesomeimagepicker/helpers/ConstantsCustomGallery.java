@@ -54,6 +54,8 @@ public class ConstantsCustomGallery {
     public static final String BROADCAST_EVENT_LONG_PRESS = "BROADCAST_EVENT_LONG_PRESS";
     public static final String BROADCAST_EVENT_LONG_PRESS_FTUE = "BROADCAST_EVENT_LONG_PRESS_FTUE";
     public static final String BROADCAST_EVENT_MEDIA_LOADED = "BROADCAST_EVENT_MEDIA_LOADED";
+    public static final String BROADCAST_EVENT_MANAGE_STORAGE = "BROADCAST_EVENT_MANAGE_STORAGE";
+    public static final String BROADCAST_EVENT_OPEN_SETTINGS = "BROADCAST_EVENT_OPEN_SETTINGS";
 
     public static final String INTENT_EXTRA_ALBUM_ID = "albumId";
     public static final String INTENT_EXTRA_MEDIA = "media";
