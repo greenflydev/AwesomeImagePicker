@@ -29,7 +29,7 @@
             android:layout_toStartOf="@+id/settings"
             android:text="@string/permission_limited"
             android:textSize="12sp"
-            android:textColor="#000000"
+            android:textAppearance="@style/TextPrimary"
             android:paddingStart="12dp"
             android:paddingEnd="0dp"
             android:paddingTop="12dp"
