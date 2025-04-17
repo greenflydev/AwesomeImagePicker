@@ -2,6 +2,7 @@ package `in`.myinnos.awesomeimagepicker.activities
 
 import android.Manifest.permission
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.R.anim.abc_fade_in
@@ -47,6 +49,10 @@ open class HelperActivity : AppCompatActivity() {
     private fun applyWindowInsetsDecorView() {
 
         val decorView = window.decorView
+
+        val isNightMode = (decorView.context.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        WindowCompat.getInsetsController(window, decorView).isAppearanceLightStatusBars = !isNightMode
 
         ViewCompat.setOnApplyWindowInsetsListener(decorView) { v: View, insets: WindowInsetsCompat ->
             insets.toWindowInsets()?.let { it ->

@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">#F7FAF8</color>
-    <color name="colorSecondary">#EFF1EF</color>
-    <color name="textColorPrimary">#191C1B</color>
-    <color name="textColorSecondary">#BF191C1B</color> <!-- 75% -->
-    <color name="colorPrimaryDark">#101813</color>
-    <color name="colorBackground">#F7FAF8</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorSecondary">#F2F2F7</color>
+    <color name="textColorPrimary">#000000</color>
+    <color name="textColorSecondary">#8A8A8E</color> <!-- 75% -->
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorBackground">#FFFFFF</color>
     <color name="colorControlHighlight">#1AEFF1EF</color> <!-- 10% -->
 
     <color name="multiple_image_select_primary">@color/colorPrimary</color>
