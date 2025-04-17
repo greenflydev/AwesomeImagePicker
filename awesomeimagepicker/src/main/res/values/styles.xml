@@ -11,4 +11,32 @@
         <item name="android:textAllCaps">false</item>
     </style>
 
+    <style name="TextPrimary" parent="TextAppearance.AppCompat.Body1">
+        <!-- Stuff here later -->
+    </style>
+
+    <style name="TextSecondary" parent="TextAppearance.AppCompat.Medium">
+        <!-- Stuff here later -->
+    </style>
+
+    <style name="DayNightTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar.Bridge">
+
+        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="android:colorSecondary">@color/colorSecondary</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="android:colorBackground">@color/colorPrimary</item>
+        <item name="android:textColorPrimary">@color/textColorPrimary</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
+        <item name="android:colorControlNormal">@color/textColorPrimary</item>
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="windowActionBar">false</item>
+
+        <!--  It should be true otherwise action mode will not overlay toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+
+    </style>
+
 </resources>

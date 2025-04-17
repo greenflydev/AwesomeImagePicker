@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorPrimary">@color/branding_toolbar</color>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorSecondary">#F2F2F7</color>
+    <color name="textColorPrimary">#000000</color>
+    <color name="textColorSecondary">#8A8A8E</color> <!-- 75% -->
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorControlHighlight">#1AEFF1EF</color> <!-- 10% -->
 
-    <color name="branding_toolbar">#f4f7f9</color>
-    <color name="branding_toolbar_statusbar">#b8b8b8</color>
-    <color name="branding_background">#ffffff</color>
-
-    <color name="multiple_image_select_primary">#FFFFFF</color>
+    <color name="multiple_image_select_primary">@color/colorPrimary</color>
     <color name="multiple_image_select_albumTextBackground">@color/colorPrimary</color>
     <color name="multiple_image_select_imageSelectBackground">#66000000</color>
 

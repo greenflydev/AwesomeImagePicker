@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="#ffffff"
+    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -29,7 +29,7 @@
             android:layout_toStartOf="@+id/settings"
             android:text="@string/permission_limited"
             android:textSize="12sp"
-            android:textColor="#000000"
+            android:textAppearance="@style/TextPrimary"
             android:paddingStart="12dp"
             android:paddingEnd="0dp"
             android:paddingTop="12dp"
@@ -58,6 +58,7 @@
         android:layout_below="@id/toolbar"
         android:paddingTop="130dp"
         android:layout_centerHorizontal="true"
+        android:textAppearance="@style/TextPrimary"
         android:text="@string/activity_media_empty"
         android:visibility="gone"/>
 
@@ -66,6 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:textAppearance="@style/TextPrimary"
         android:text="@string/error_null_cursor" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -77,9 +79,8 @@
 
     <TextView
         android:id="@+id/selected_count"
-        android:background="#e3e3e3"
-        android:textColor="#000000"
-        android:fontFamily="sans-serif-medium"
+        android:background="@color/colorSecondary"
+        android:textAppearance="@style/TextPrimary"
         android:textSize="18sp"
         android:gravity="center"
         android:visibility="gone"

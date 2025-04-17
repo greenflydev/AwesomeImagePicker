@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/rounded_box_white"
+        android:background="@drawable/rounded_box_secondary_daynight"
         android:padding="30dp"
         android:orientation="vertical">
 
@@ -39,7 +39,7 @@
             android:layout_marginTop="27dp"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:textColor="#12263f"
+            android:textAppearance="@style/TextPrimary"
             android:text="@string/long_press_ftue_title"
             android:textStyle="bold"
             android:textSize="20sp"/>
@@ -51,7 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
-            android:textColor="#464646"
+            android:textAppearance="@style/TextPrimary"
             android:textSize="15sp"/>
 
         <RelativeLayout

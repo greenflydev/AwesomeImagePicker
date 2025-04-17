@@ -2,6 +2,7 @@ package `in`.myinnos.awesomeimagepicker.activities
 
 import android.Manifest.permission
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.PermissionChecker
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import `in`.myinnos.awesomeimagepicker.R
 import `in`.myinnos.awesomeimagepicker.R.anim.abc_fade_in
 import `in`.myinnos.awesomeimagepicker.R.anim.abc_fade_out
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
@@ -47,6 +50,10 @@ open class HelperActivity : AppCompatActivity() {
 
         val decorView = window.decorView
 
+        val isNightMode = (decorView.context.resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        WindowCompat.getInsetsController(window, decorView).isAppearanceLightStatusBars = !isNightMode
+
         ViewCompat.setOnApplyWindowInsetsListener(decorView) { v: View, insets: WindowInsetsCompat ->
             insets.toWindowInsets()?.let { it ->
                 val windowInsets = WindowInsetsCompat.toWindowInsetsCompat(it)
@@ -55,7 +62,7 @@ open class HelperActivity : AppCompatActivity() {
                 val right = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).right
                 val bottom = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom
 
-                v.setBackgroundColor(Color.WHITE)
+                v.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.colorPrimary))
 
                 // Apply padding to prevent overlap with system bars
                 v.setPadding(left, top, right, bottom)

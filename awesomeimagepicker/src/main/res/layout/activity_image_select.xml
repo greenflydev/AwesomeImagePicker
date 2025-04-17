@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#ffffff"
+    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -15,11 +15,11 @@
         android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="#ffffff"
+        android:background="@color/colorPrimary"
         app:tabTextAppearance="@style/CustomTabText"
         app:tabBackground="@color/transparent"
         app:tabIndicatorColor="@color/greenfly_green"
-        app:tabTextColor="@color/black"
+        app:tabTextColor="@color/textColorPrimary"
         app:tabSelectedTextColor="@color/greenfly_green"
         app:tabIndicatorHeight="5dp"
         app:tabMode="fixed" />
@@ -31,6 +31,7 @@
         android:layout_below="@id/tabLayout"
         android:paddingTop="130dp"
         android:layout_centerHorizontal="true"
+        android:textAppearance="@style/TextPrimary"
         android:text="@string/activity_media_empty"
         android:visibility="gone"/>
 
@@ -44,8 +45,8 @@
 
     <TextView
         android:id="@+id/selected_count"
-        android:background="#e3e3e3"
-        android:textColor="#000000"
+        android:background="@color/colorSecondary"
+        android:textAppearance="@style/TextPrimary"
         android:fontFamily="sans-serif-medium"
         android:textSize="18sp"
         android:gravity="center"
