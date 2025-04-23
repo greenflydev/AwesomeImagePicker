@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app_name" translatable="false">Awesome Image Picker</string>
+
+    <!--Request Permission-->
+    <string name="permission_info">App requires permission to Storage to view media.</string>
+    <string name="permission_force">App requires permission to Storage to view media. Tap Settings and go to Permissions to grant permission.</string>
+    <string name="permission_limited">You\'ve allowed access to limited media. Tap Manage to add more or allow access to all media.</string>
+    <string name="permission_ok">OK</string>
+    <string name="permission_settings">Einstellungen</string>
+    <string name="permission_manage">Verwalten</string>
+    <string name="permission_package">package</string>
+
+    <string name="album_view">Album auswählen</string>
+    <string name="single_image_view">Select up to %1$d photo</string>
+    <string name="single_video_view">Select up to %1$d video</string>
+    <string name="image_view">Wählen Sie bis zu %1$d Fotos aus</string>
+    <string name="video_view">Wählen Sie bis zu %1$d Videos aus</string>
+    <string name="media_view">Wählen Sie bis zu %1$d Fotos und Videos aus</string>
+
+    <string name="item_selected">%1$d Artikel ausgewählt</string>
+    <string name="items_selected">%1$d Elemente ausgewählt</string>
+    <string name="image_limit_exceeded">Can select a maximum of %1$d photos</string>
+    <string name="video_limit_exceeded">Can select a maximum of %1$d videos</string>
+    <string name="media_limit_exceeded">Sie können maximal %1$d Fotos und Videos auswählen</string>
+    <string name="error_null_cursor">Oops, something went wrong!</string>
+    <string name="add">DONE</string>
+    <string name="capture_photo">Capture Photo</string>
+    <string name="activity_media_empty">You have no %1$s on your device to upload.</string>
+    <string name="album_select_videos">videos</string>
+    <string name="album_select_photos">photos</string>
+    <string name="album_select_media">media</string>
+    <string name="all_media">Alle Medien</string>
+
+    <string name="long_press_ftue_title">Lange drücken, um eine Vorschau anzuzeigen</string>
+    <string name="long_press_ftue_message">Drücken Sie lange auf ein Asset, um es in der Vorschau anzuzeigen, bevor Sie es zum Hochladen auswählen.</string>
+    <string name="long_press_ftue_button">Verstanden</string>
+
+    <string name="tab_all_media">Alle Medien</string>
+    <string name="tab_photos">Fotos</string>
+    <string name="tab_videos">Videos</string>
+</resources>
