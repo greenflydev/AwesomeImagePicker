@@ -17,7 +17,7 @@
     <string name="image_view">Wählen Sie bis zu %1$d Fotos aus</string>
     <string name="video_view">Wählen Sie bis zu %1$d Videos aus</string>
     <string name="media_view">Wählen Sie bis zu %1$d Fotos und Videos aus</string>
-
+  
     <string name="item_selected">%1$d Element ausgewählt</string>
     <string name="items_selected">%1$d Elemente ausgewählt</string>
     <string name="image_limit_exceeded">Sie können maximal %1$d Fotos auswählen</string>
