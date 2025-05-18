@@ -23,6 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@+id/toolbar_back"
+                android:layout_toStartOf="@+id/toolbar_done"
                 android:layout_centerVertical="true"
                 android:textColor="@color/textColorPrimary"
                 android:fontFamily="sans-serif-medium"
