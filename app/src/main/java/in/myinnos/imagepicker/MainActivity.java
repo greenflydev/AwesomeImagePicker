@@ -131,11 +131,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.github:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/myinnos")));
-            default:
-                return super.onOptionsItemSelected(item);
+        // R fields are non-final with AGP 9, so they can't be used in a switch.
+        if (item.getItemId() == R.id.github) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/myinnos")));
         }
+        return super.onOptionsItemSelected(item);
     }
 }
