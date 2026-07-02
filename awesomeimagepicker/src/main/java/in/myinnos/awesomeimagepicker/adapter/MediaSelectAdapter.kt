@@ -28,6 +28,11 @@ abstract class MediaSelectAdapter(private val context: Context,
 
     private var filteredMediaList = album.mediaList
 
+    /**
+     * Returns the media item at the given adapter position, or null if out of bounds.
+     */
+    fun getMediaAtPosition(position: Int): Media? = filteredMediaList.getOrNull(position)
+
     fun filterMedia(mediaType: MediaType): Int {
         filteredMediaList = when (mediaType) {
             MediaType.IMAGES -> album.mediaList.filter { it is Image }

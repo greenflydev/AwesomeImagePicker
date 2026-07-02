@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 2000;
     private static final int READ_STORAGE_PERMISSION = 4000;
-    private static final int LIMIT = 5;
+    private static final int LIMIT = 20;
 
     private ImageView imageView;
     private Button chooseImage;
