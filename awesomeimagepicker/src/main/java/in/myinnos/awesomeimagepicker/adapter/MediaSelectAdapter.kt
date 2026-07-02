@@ -24,7 +24,7 @@ abstract class MediaSelectAdapter(private val context: Context,
                                   private val album: Album) : RecyclerView.Adapter<MediaSelectAdapter.ViewHolder>() {
 
     abstract fun clicked(media: Media)
-    abstract fun longClicked(media: Media)
+    abstract fun longClicked(media: Media, sourceView: View)
 
     private var filteredMediaList = album.mediaList
 
@@ -110,9 +110,10 @@ abstract class MediaSelectAdapter(private val context: Context,
             clicked(media)
         }
 
-        // Long click to see a preview of the image or video
+        // Long click to see a preview of the image or video.
+        // Pass the thumbnail image so the preview can animate out of it.
         binding.root.setOnLongClickListener {
-            longClicked(media)
+            longClicked(media, binding.imageView)
             // Return true or it will also trigger an on click event
             true
         }

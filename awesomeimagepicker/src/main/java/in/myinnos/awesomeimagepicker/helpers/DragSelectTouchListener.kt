@@ -22,6 +22,11 @@ interface DragSelectListener {
     fun onDragStateChanged(position: Int, shouldBeSelected: Boolean)
 
     /**
+     * Called once when a drag-select gesture starts (finger first crosses into a new cell).
+     */
+    fun onDragSelectionStarted()
+
+    /**
      * Called when the drag gesture ends (finger lifted or cancelled).
      */
     fun onDragSelectionFinished()
@@ -205,6 +210,9 @@ class DragSelectTouchListener(
 
         // Haptic feedback on activation
         recyclerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+
+        // Notify listener that a drag gesture has started
+        listener.onDragSelectionStarted()
 
         // Prevent RecyclerView from scrolling
         recyclerView.parent?.requestDisallowInterceptTouchEvent(true)

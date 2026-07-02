@@ -31,8 +31,8 @@
     <string name="album_select_media">media</string>
     <string name="all_media">All Media</string>
 
-    <string name="long_press_ftue_title">Long Press to Preview</string>
-    <string name="long_press_ftue_message">Long press on an asset to preview it before selecting it to upload.</string>
+    <string name="long_press_ftue_title">Quick Tips</string>
+    <string name="long_press_ftue_message">Drag to select several photos at once. Press &amp; hold a photo to preview it.</string>
     <string name="long_press_ftue_button">Got it</string>
 
     <string name="tab_all_media">All Media</string>

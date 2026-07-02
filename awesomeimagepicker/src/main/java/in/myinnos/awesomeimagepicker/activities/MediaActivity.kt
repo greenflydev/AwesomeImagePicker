@@ -117,8 +117,8 @@ class MediaActivity : HelperActivity() {
                 displaySelectedCount()
             }
 
-            override fun longClicked(media: Media) {
-                showMediaPreview(media)
+            override fun longClicked(media: Media, sourceView: View) {
+                showMediaPreview(media, sourceView)
             }
         }
         binding.recyclerView.adapter = adapter
@@ -171,6 +171,12 @@ class MediaActivity : HelperActivity() {
                         displaySelectedCount()
                     }
 
+                    override fun onDragSelectionStarted() {
+                        val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                        localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_SWIPE, true)
+                        LocalBroadcastManager.getInstance(this@MediaActivity).sendBroadcast(localIntent)
+                    }
+
                     override fun onDragSelectionFinished() {
                         limitToastShownDuringDrag = false
                     }
@@ -218,12 +224,12 @@ class MediaActivity : HelperActivity() {
         orientationBasedUI(newConfig.orientation)
     }
 
-    private fun showMediaPreview(media: Media) {
+    private fun showMediaPreview(media: Media, sourceView: View) {
         /*
          * This will check if the user should see the FTUE, and if they should
          * then display it to the user.
          */
-        binding.mediaPreview.showMediaPreview(media)
+        binding.mediaPreview.showMediaPreview(media, sourceView)
     }
 
     private fun displaySelectedCount() {
