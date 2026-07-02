@@ -102,6 +102,8 @@ class MediaPreview @JvmOverloads constructor(
     }
 
     private fun dismissMediaPreview() {
+        enterListener?.removeListener()
+        enterListener = null
         val preview = binding.previewRoundedClip
 
         // If we never captured a valid source (or the preview isn't laid out yet)
