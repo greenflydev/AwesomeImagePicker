@@ -52,6 +52,7 @@ class MediaPreview @JvmOverloads constructor(
      * This is required to be able to tap the video and dismiss it.
      */
     @SuppressLint("ClickableViewAccessibility")
+    @JvmOverloads
     fun showMediaPreview(media: Media, sourceView: View? = null) {
 
         captureStartRect(sourceView)

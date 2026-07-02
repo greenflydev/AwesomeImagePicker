@@ -33,7 +33,7 @@ interface DragSelectListener {
 }
 
 /**
- * A RecyclerView.OnItemTouchListener that implements swipe-to-select.
+ * A RecyclerView.OnItemTouchListener that implements drag-to-select.
  *
  * Activation: When a finger touches down and then moves far enough and predominantly horizontally into a different grid cell
  * (different adapter position), drag-select mode activates with haptic feedback.
