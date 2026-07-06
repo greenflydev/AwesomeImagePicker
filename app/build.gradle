@@ -13,14 +13,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -35,8 +35,8 @@ dependencies {
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    implementation 'androidx.appcompat:appcompat:1.7.0'
-    implementation 'com.github.bumptech.glide:glide:4.15.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.github.bumptech.glide:glide:5.0.7'
     testImplementation 'junit:junit:4.13.2'
     implementation project(path: ':awesomeimagepicker')
 }

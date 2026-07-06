@@ -56,6 +56,7 @@ public class ConstantsCustomGallery {
     public static final String BROADCAST_EVENT_MEDIA_LOADED = "BROADCAST_EVENT_MEDIA_LOADED";
     public static final String BROADCAST_EVENT_MANAGE_STORAGE = "BROADCAST_EVENT_MANAGE_STORAGE";
     public static final String BROADCAST_EVENT_OPEN_SETTINGS = "BROADCAST_EVENT_OPEN_SETTINGS";
+    public static final String BROADCAST_EVENT_SWIPE = "BROADCAST_EVENT_SWIPE";
 
     public static final String INTENT_EXTRA_ALBUM_ID = "albumId";
     public static final String INTENT_EXTRA_MEDIA = "media";
@@ -68,7 +69,7 @@ public class ConstantsCustomGallery {
 
     public static final String SP_NAME_MAIN = "SP_NAME_MAIN";
     public static final String SP_PREVIOUSLY_SELECTED_IDS = "SP_PREVIOUSLY_SELECTED_IDS";
-    public static final String SP_LONG_PRESS_FTUE_VIEWED = "SP_LONG_PRESS_FTUE_VIEWED";
+    public static final String SP_LONG_PRESS_FTUE_VIEWED = "SP_LONG_PRESS_FTUE_VIEWED_V2";
 
     /*
      * Holds a list of ids that the user has already selected to upload. So if the user comes back

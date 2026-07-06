@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int REQUEST_CODE = 2000;
     private static final int READ_STORAGE_PERMISSION = 4000;
-    private static final int LIMIT = 5;
+    private static final int LIMIT = 20;
 
     private ImageView imageView;
     private Button chooseImage;
@@ -131,11 +131,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch (item.getItemId()) {
-            case R.id.github:
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/myinnos")));
-            default:
-                return super.onOptionsItemSelected(item);
+        // AGP 9 generates the app's R class with non-final fields regardless of
+        // android.nonFinalResIds, so R.id.* is no longer a compile-time constant
+        // and can't be used in a switch/case.
+        if (item.getItemId() == R.id.github) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/myinnos")));
         }
+        return super.onOptionsItemSelected(item);
     }
 }

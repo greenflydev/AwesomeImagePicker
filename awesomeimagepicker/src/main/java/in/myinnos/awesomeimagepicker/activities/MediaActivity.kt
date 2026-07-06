@@ -18,6 +18,8 @@ import `in`.myinnos.awesomeimagepicker.R.anim.abc_fade_out
 import `in`.myinnos.awesomeimagepicker.adapter.MediaSelectAdapter
 import `in`.myinnos.awesomeimagepicker.databinding.ActivityImageSelectBinding
 import `in`.myinnos.awesomeimagepicker.helpers.ConstantsCustomGallery
+import `in`.myinnos.awesomeimagepicker.helpers.DragSelectListener
+import `in`.myinnos.awesomeimagepicker.helpers.DragSelectTouchListener
 import `in`.myinnos.awesomeimagepicker.helpers.GalleryUtil
 import `in`.myinnos.awesomeimagepicker.models.Album
 import `in`.myinnos.awesomeimagepicker.models.Media
@@ -35,6 +37,9 @@ class MediaActivity : HelperActivity() {
     private var currentMediaType = MediaType.MIXED
 
     private var adapter: MediaSelectAdapter? = null
+
+    // Drag-select: track whether limit toast has been shown during current drag
+    private var limitToastShownDuringDrag = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -111,11 +116,65 @@ class MediaActivity : HelperActivity() {
                 displaySelectedCount()
             }
 
-            override fun longClicked(media: Media) {
-                showMediaPreview(media)
+            override fun longClicked(media: Media, sourceView: View) {
+                showMediaPreview(media, sourceView)
             }
         }
         binding.recyclerView.adapter = adapter
+
+        // Attach drag-to-select only when multi-select is allowed (limit > 1)
+        if (ConstantsCustomGallery.limit > 1) {
+            val dragSelectListener = DragSelectTouchListener(
+                binding.recyclerView,
+                object : DragSelectListener {
+                    override fun onDragStateChanged(position: Int, shouldBeSelected: Boolean) {
+                        val media = adapter?.getMediaAtPosition(position) ?: return
+
+                        if (shouldBeSelected) {
+                            // Skip already-selected items
+                            if (media.isSelected) return
+
+                            // Enforce selection limit (once-per-drag toast policy)
+                            val countSelected = ConstantsCustomGallery.currentlySelectedMap.size
+                            if (countSelected >= ConstantsCustomGallery.limit) {
+                                if (!limitToastShownDuringDrag) {
+                                    limitToastShownDuringDrag = true
+                                    showSelectionLimitToast()
+                                }
+                                return
+                            }
+
+                            // Select the item
+                            updateItemSelection(media, true)
+                        } else {
+                            // Skip already-deselected items
+                            if (!media.isSelected) return
+
+                            // Deselect the item
+                            updateItemSelection(media, false)
+                        }
+
+                        adapter?.notifyItemChanged(position)
+                        displaySelectedCount()
+                    }
+
+                    override fun onDragSelectionStarted() {
+                        val localIntent = Intent(ConstantsCustomGallery.BROADCAST_EVENT)
+                        localIntent.putExtra(ConstantsCustomGallery.BROADCAST_EVENT_SWIPE, true)
+                        LocalBroadcastManager.getInstance(this@MediaActivity).sendBroadcast(localIntent)
+                    }
+
+                    override fun onDragSelectionFinished() {
+                        limitToastShownDuringDrag = false
+                    }
+                }
+            )
+            // Provide selection state to the touch listener for mode determination and reversal
+            dragSelectListener.isSelectedProvider = { position ->
+                adapter?.getMediaAtPosition(position)?.isSelected ?: false
+            }
+            binding.recyclerView.addOnItemTouchListener(dragSelectListener)
+        }
 
         setMessageDisplays(album.mediaList.size)
 
@@ -152,12 +211,12 @@ class MediaActivity : HelperActivity() {
         orientationBasedUI(newConfig.orientation)
     }
 
-    private fun showMediaPreview(media: Media) {
+    private fun showMediaPreview(media: Media, sourceView: View) {
         /*
          * This will check if the user should see the FTUE, and if they should
          * then display it to the user.
          */
-        binding.mediaPreview.showMediaPreview(media)
+        binding.mediaPreview.showMediaPreview(media, sourceView)
     }
 
     private fun displaySelectedCount() {
@@ -258,25 +317,38 @@ class MediaActivity : HelperActivity() {
     }
 
     private fun toggleSelection(media: Media) {
-
         val countSelected = ConstantsCustomGallery.currentlySelectedMap.size
         if (!media.isSelected && countSelected >= ConstantsCustomGallery.limit) {
-            var messageId = R.string.media_limit_exceeded
-            when (ConstantsCustomGallery.mediaType) {
-                MediaType.VIDEOS -> messageId = R.string.video_limit_exceeded
-                MediaType.IMAGES -> messageId = R.string.image_limit_exceeded
-                else -> {}
-            }
-            Toast.makeText(applicationContext, getString(messageId, ConstantsCustomGallery.limit), Toast.LENGTH_SHORT).show()
+            showSelectionLimitToast()
             return
         }
 
-        media.isSelected = !media.isSelected
-        if (media.isSelected) {
+        updateItemSelection(media, !media.isSelected)
+        adapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * Updates the selection state of a media item and syncs with the global selection map.
+     */
+    private fun updateItemSelection(media: Media, selected: Boolean) {
+        media.isSelected = selected
+        if (selected) {
             ConstantsCustomGallery.currentlySelectedMap[media.id.toString()] = media
         } else {
             ConstantsCustomGallery.currentlySelectedMap.remove(media.id.toString())
         }
-        adapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * Shows the selection limit exceeded toast with the appropriate message based on media type.
+     */
+    private fun showSelectionLimitToast() {
+        var messageId = R.string.media_limit_exceeded
+        when (ConstantsCustomGallery.mediaType) {
+            MediaType.VIDEOS -> messageId = R.string.video_limit_exceeded
+            MediaType.IMAGES -> messageId = R.string.image_limit_exceeded
+            else -> {}
+        }
+        Toast.makeText(applicationContext, getString(messageId, ConstantsCustomGallery.limit), Toast.LENGTH_SHORT).show()
     }
 }
