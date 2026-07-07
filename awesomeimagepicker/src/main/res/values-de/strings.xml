@@ -32,8 +32,8 @@
     <string name="album_select_media">Medien</string>
     <string name="all_media">Alle Medien</string>
 
-    <string name="long_press_ftue_title">Lange drücken, um eine Vorschau anzuzeigen</string>
-    <string name="long_press_ftue_message">Drücken Sie lange auf ein Asset, um es in der Vorschau anzuzeigen, bevor Sie es zum Hochladen auswählen.</string>
+    <string name="long_press_ftue_title">Kurztipps</string>
+    <string name="long_press_ftue_message">Ziehen Sie, um mehrere Fotos gleichzeitig auszuwählen. Halten Sie ein Foto gedrückt, um eine Vorschau davon anzuzeigen.</string>
     <string name="long_press_ftue_button">Verstanden</string>
 
     <string name="tab_all_media">Alle Medien</string>
