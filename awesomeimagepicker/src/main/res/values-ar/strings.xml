@@ -32,8 +32,8 @@
     <string name="album_select_media">الوسائط</string>
     <string name="all_media">جميع الوسائط</string>
 
-    <string name="long_press_ftue_title">اضغط لفترة طويلة للمعاينة</string>
-    <string name="long_press_ftue_message">اضغط لفترة طويلة على مادة العرض لمعاينتها قبل تحديدها للتحميل</string>
+    <string name="long_press_ftue_title">نصائح سريعة</string>
+    <string name="long_press_ftue_message">اسحب لتحديد عدة صور في وقت واحد. اضغط مع الاستمرار على صورة لمعاينتها.</string>
     <string name="long_press_ftue_button">فهمت</string>
 
     <string name="tab_all_media">جميع الوسائط</string>
