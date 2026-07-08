@@ -32,8 +32,8 @@
     <string name="album_select_media">メディア</string>
     <string name="all_media">すべてのメディア</string>
 
-    <string name="long_press_ftue_title">長押ししてプレビュー</string>
-    <string name="long_press_ftue_message">アップロードするアセットを選択する前に、アセットを長押ししてプレビューします。</string>
+    <string name="long_press_ftue_title">クイックヒント</string>
+    <string name="long_press_ftue_message">ドラッグして複数の写真を一度に選択します。写真を長押しすると、プレビューできます。</string>
     <string name="long_press_ftue_button">了解しました</string>
 
     <string name="tab_all_media">すべてのメディア</string>

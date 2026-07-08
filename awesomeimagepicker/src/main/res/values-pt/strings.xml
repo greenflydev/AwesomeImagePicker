@@ -32,8 +32,8 @@
     <string name="album_select_media">mídias</string>
     <string name="all_media">Todas as mídias</string>
 
-    <string name="long_press_ftue_title">Pressione e segure para visualizar</string>
-    <string name="long_press_ftue_message">Pressione e segure um recurso para visualizá-lo antes de selecioná-lo para fazer o upload.</string>
+    <string name="long_press_ftue_title">Dicas rápidas</string>
+    <string name="long_press_ftue_message">Arraste para selecionar várias fotos de uma vez. Pressione e segure uma foto para ver a prévia.</string>
     <string name="long_press_ftue_button">Entendi</string>
 
     <string name="tab_all_media">Todas as mídias</string>
